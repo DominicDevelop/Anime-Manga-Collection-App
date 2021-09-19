@@ -20,7 +20,7 @@ public class ListManager : MonoSingleton<ListManager>
     #endregion
 
     [SerializeField]
-    private Transform _searchResultList;
+    private Transform _searchResultListTransform;
     private Dictionary<string, GameObject> _resultListElems = new Dictionary<string, GameObject>();
 
     private string _searchTerm = "";
@@ -40,22 +40,26 @@ public class ListManager : MonoSingleton<ListManager>
         _resultListElems.Clear();
         #endregion
 
-        var listElems = HtmlParser.SendMangaSearchRequest(_searchTerm);
+        var listElems = HtmlParser.GetMangaSearchResult(_searchTerm);
 
-        if (listElems.Count > 0) {
+        if (listElems != null && listElems.Count > 0) {
             foreach (var elem in listElems) {
                 var imagePath = elem.Attributes["data-bg"].Value;
 
-                GameObject listElem = PrefabManager.Instance.GetMangaListElem(_searchResultList);
+                GameObject listElemGO = PrefabManager.Instance.GetMangaListElem(_searchResultListTransform);
+                ListElem listElemScript = listElemGO.GetComponent<ListElem>();
 
+                //TODO: Performance check with Regex and replacing front and end part of the string with string.Empty
                 var match = Regex.Match(imagePath, REGEX_MANGA_ID_FROM_IMG_PATH);
                 string mangaId = match.Groups[0].Value.Split('.')[0];
 
+                listElemScript.ID = mangaId;
+
                 if (!_resultListElems.ContainsKey(mangaId)) {
-                    _resultListElems.Add(mangaId, listElem);
+                    _resultListElems.Add(mangaId, listElemGO);
                 }
 
-                StartCoroutine(SetCoverByImageURL(listElem, imagePath));
+                StartCoroutine(SetCoverByImageURL(listElemGO, listElemScript, imagePath));
             }
         }
     }
@@ -64,9 +68,13 @@ public class ListManager : MonoSingleton<ListManager>
         _searchTerm = value;
     }
 
+    public void DisableListView() {
+        _searchResultListTransform.gameObject.SetActive(false);
+    }
+
     #region Private Methohds
-    private IEnumerator SetCoverByImageURL(GameObject mangaListElem, string url) {
-        RawImage listElemImage = mangaListElem.GetComponent<RawImage>();
+    private IEnumerator SetCoverByImageURL(GameObject mangaListElemGO, ListElem mangaListElemScript, string url) {
+        RawImage listElemImage = mangaListElemGO.GetComponent<RawImage>();
 
         using (var request = UnityWebRequestTexture.GetTexture(string.Format(IMAGE_CDN_PATH, url))) {
             yield return request.SendWebRequest();
@@ -76,7 +84,10 @@ public class ListManager : MonoSingleton<ListManager>
             } else {
                 var textureBytes = request.downloadHandler.data;
 
-                listElemImage.texture = Texture2DExt.CreateTexture2DFromWebP(textureBytes, lMipmaps: true, lLinear: true, lError: out Error lError);
+                Texture2D cover = Texture2DExt.CreateTexture2DFromWebP(textureBytes, lMipmaps: true, lLinear: true, lError: out Error lError);
+                listElemImage.texture = cover;
+
+                mangaListElemScript.Cover = cover;
             }
         }
     }
