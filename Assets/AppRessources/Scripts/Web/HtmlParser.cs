@@ -32,7 +32,7 @@ public static class HtmlParser
 
         var nodes = ParseHtmlByXPATH(mangaUrl, string.Format(XPATH_FIND_DESCRIPTION, "manga", "de"));
 
-        return nodes[0].InnerHtml.ReplaceEmTags();
+        return nodes[0].InnerHtml.ReplaceHtmlTags();
     }
     #endregion
 
