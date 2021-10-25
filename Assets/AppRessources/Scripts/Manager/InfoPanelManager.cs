@@ -1,6 +1,5 @@
 using HtmlAgilityPack;
-using System.Collections;
-using System.Collections.Generic;
+using Doozy.Runtime.Signals;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -35,6 +34,11 @@ public class InfoPanelManager : MonoSingleton<InfoPanelManager>
     private TMP_Text _description;
     #endregion
 
+    #region Signal Stuff
+    private string _signalName = "ShowInfoPanel";
+    private string _signalCategory = "Navigate";
+    #endregion
+
     public void SetDataAndSetVisible(Texture2D cover, HtmlNodeCollection infoNodes, string description) {
         _cover.texture = cover;
 
@@ -63,7 +67,7 @@ public class InfoPanelManager : MonoSingleton<InfoPanelManager>
 
         _description.text = description;
 
-        ListManager.Instance.DisableListView();
-        _infoPanel.SetActive(true);
+        //Send signal to show the UIView (Portal in Nody) with the Infopanel that contains everything about a Manga/Anime
+        Signal.Send(_signalName, _signalCategory, "Show InfoPanel for Anime/Manga!");
     }
 }

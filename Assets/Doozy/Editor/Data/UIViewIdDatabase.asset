@@ -14,6 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Database:
     Items:
+    - Category: Content
+      Name: InfoPanel
+    - Category: Content
+      Name: SearchResult
     - Category: HUD
       Name: Bottom
     - Category: HUD

@@ -137,6 +137,8 @@ MonoBehaviour:
     - Category: Navigation
       Name: Cancel
     - Category: Navigation
+      Name: InfoPanel
+    - Category: Navigation
       Name: Next
     - Category: Navigation
       Name: Ok

@@ -1,3 +1,5 @@
+using Doozy.Runtime.Signals;
+using Doozy.Runtime.UIManager.Containers;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -17,18 +19,30 @@ public class ListManager : MonoSingleton<ListManager>
     #region REGEX
     private readonly string REGEX_MANGA_ID_FROM_IMG_PATH = @"(\d+).webp";
     #endregion
+
+    #region Signals
+    private readonly string CATEGORY_NAVIGATION = "Navigate";
+
+    private readonly string SIGNAL_SHOW_SEARCH_RESULT_LIST = "ShowSearchResultList";
+    #endregion
     #endregion
 
     [SerializeField]
     private Transform _searchResultListTransform;
     private Dictionary<string, GameObject> _resultListElems = new Dictionary<string, GameObject>();
 
+    [SerializeField]
+    private UIView _searchResultView;
+
     private string _searchTerm = "";
     private string _prevSearchTerm = "";
 
     public void Search() {
-        if (_searchTerm.Length < 1 || _prevSearchTerm.Equals(_searchTerm))
+        if (_searchTerm.Length < 1 || (_prevSearchTerm.Equals(_searchTerm) && _searchResultView.isVisible))
             return;
+
+        Signal.Send(SIGNAL_SHOW_SEARCH_RESULT_LIST, CATEGORY_NAVIGATION, "Show the result of a search in the Search List View");
+        Debug.Log("Test");
 
         _prevSearchTerm = _searchTerm;
 
@@ -74,7 +88,7 @@ public class ListManager : MonoSingleton<ListManager>
 
     #region Private Methohds
     private IEnumerator SetCoverByImageURL(GameObject mangaListElemGO, ListElem mangaListElemScript, string url) {
-        RawImage listElemImage = mangaListElemGO.GetComponent<RawImage>();
+        RawImage listElemImage = mangaListElemGO.GetComponentInChildren<RawImage>();
 
         using (var request = UnityWebRequestTexture.GetTexture(string.Format(IMAGE_CDN_PATH, url))) {
             yield return request.SendWebRequest();

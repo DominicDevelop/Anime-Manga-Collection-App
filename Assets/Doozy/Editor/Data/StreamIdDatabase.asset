@@ -33,6 +33,10 @@ MonoBehaviour:
     - Category: Navigate
       Name: Right
     - Category: Navigate
+      Name: ShowInfoPanel
+    - Category: Navigate
+      Name: ShowSearchResultList
+    - Category: Navigate
       Name: Up
     - Category: None
       Name: None
