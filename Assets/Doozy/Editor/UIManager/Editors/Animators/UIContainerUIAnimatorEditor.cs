@@ -54,8 +54,8 @@ namespace Doozy.Editor.UIManager.Editors.Animators
                 .AddManualButton("https://doozyentertainment.atlassian.net/wiki/spaces/DUI4/pages/1048707091/UIContainer+UI+Animator?atlOrigin=eyJpIjoiZGRjNzc3ZGFkZDljNGQwMGJmMDMzMTMwMmFmYTNjNTUiLCJwIjoiYyJ9")
                 .AddYouTubeButton("www.youtube.com/c/DoozyEntertainment");
 
-            castedTarget.showAnimation.SetTarget(castedTarget.rectTransform);
-            castedTarget.hideAnimation.SetTarget(castedTarget.rectTransform);
+            // castedTarget.showAnimation.SetTarget(castedTarget.rectTransform);
+            // castedTarget.hideAnimation.SetTarget(castedTarget.rectTransform);
 
             showAnimatedContainer.AddOnShowCallback(() => showAnimatedContainer.Bind(serializedObject));
             hideAnimatedContainer.AddOnShowCallback(() => hideAnimatedContainer.Bind(serializedObject));

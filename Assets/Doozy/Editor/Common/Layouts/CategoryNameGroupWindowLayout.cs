@@ -129,7 +129,13 @@ namespace Doozy.Editor.Common.Layouts
                     .SetTarget(m_Items[i])
                     .SetSaveHandler(ItemSaveHandler)
                     .SetRemoveHandler(ItemRemoveHandler);
+
+                #if UNITY_2021_2_OR_NEWER
+                fluidListView.listView.fixedItemHeight = 30;
+                #else
                 fluidListView.listView.itemHeight = 30;
+                #endif
+
                 fluidListView
                     .SetItemsSource(m_Items)
                     .SetDynamicListHeight(true)
@@ -141,6 +147,21 @@ namespace Doozy.Editor.Common.Layouts
             }
 
             UpdateDatabase();
+        }
+
+        private bool ShowEmptyDatabase()
+        {
+            if (!databaseIsEmpty)
+                return false; //database is NOT empty
+
+            content.Clear();
+            content
+                .AddChild(createNewIdContainer.SetStyleMarginBottom(DesignUtils.k_Spacing * 4))
+                .AddChild(placeholderEmptyDatabase);
+
+            UpdateCreateNewIdContainer();
+
+            return true; // database is empty
         }
 
         private void UpdateDatabase()
@@ -155,16 +176,8 @@ namespace Doozy.Editor.Common.Layouts
 
             sideMenu.searchBox.SetEnabled(!databaseIsEmpty);
 
-            if (databaseIsEmpty)
-            {
-                content.Clear();
-                content
-                    .AddChild(createNewIdContainer.SetStyleMarginBottom(DesignUtils.k_Spacing * 4))
-                    .AddChild(placeholderEmptyDatabase);
-
-                UpdateCreateNewIdContainer();
+            if (ShowEmptyDatabase())
                 return;
-            }
 
             foreach (string category in database.GetCategories())
             {
@@ -514,6 +527,7 @@ namespace Doozy.Editor.Common.Layouts
             EditorUtility.SetDirty(targetObject);
             AssetDatabase.SaveAssets();
             UpdateDatabase();
+            schedule.Execute(() => sideMenu.buttons.First()?.SetIsOn(true));
         }
 
         private void ItemRemoveHandler(CategoryNameItem targetItem)
@@ -555,6 +569,7 @@ namespace Doozy.Editor.Common.Layouts
             }
 
             UpdateDatabase();
+            schedule.Execute(() => sideMenu.buttons.First()?.SetIsOn(true));
         }
 
         private bool ItemSaveHandler(CategoryNameItem targetItem, string newName)

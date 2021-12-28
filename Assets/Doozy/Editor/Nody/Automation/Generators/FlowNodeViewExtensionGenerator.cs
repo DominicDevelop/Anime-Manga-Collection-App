@@ -64,7 +64,7 @@ namespace Doozy.Editor.Nody.Automation.Generators
 
                 nodesStringBuilder.AppendLine($"                {nodeTypeFullName} _ => new {nodeViewTypeFullName}(graphView, node),");
             }
-            templateData = templateData.Replace("//NODES//", nodesStringBuilder.ToString().RemoveLast(2));
+            templateData = templateData.Replace("//NODES//", nodesStringBuilder.ToString().RemoveLast(Environment.NewLine.Length));
             return templateData;
         }
     }

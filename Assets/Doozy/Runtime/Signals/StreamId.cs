@@ -8,7 +8,7 @@ using Doozy.Runtime.Common;
 namespace Doozy.Runtime.Signals
 {
     [Serializable]
-    public class StreamId : CategoryNameId
+    public partial class StreamId : CategoryNameId
     {
         public StreamId() {}
         public StreamId(string category, string name, bool custom = false) : base(category, name, custom) {}

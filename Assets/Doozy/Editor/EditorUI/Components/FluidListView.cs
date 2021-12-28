@@ -188,7 +188,13 @@ namespace Doozy.Editor.EditorUI.Components
 
             //LIST VIEW
             preferredListHeight = LIST_MINIMUM_HEIGHT;
+            
+            #if UNITY_2021_2_OR_NEWER
+            listView.fixedItemHeight = LIST_ITEM_HEIGHT;
+            #else
             listView.itemHeight = LIST_ITEM_HEIGHT;
+            #endif
+            
             // listView.RegisterCallback<AttachToPanelEvent>(evt => Undo.undoRedoPerformed += Update);
             // listView.RegisterCallback<DetachFromPanelEvent>(evt => Undo.undoRedoPerformed -= Update);
 
@@ -230,7 +236,11 @@ namespace Doozy.Editor.EditorUI.Components
 
         private void DataUpdate()
         {
+            #if UNITY_2021_2_OR_NEWER
+            listView.Rebuild();
+            #else
             listView.Refresh();
+            #endif
         }
 
         #region Visual Update
@@ -270,7 +280,12 @@ namespace Doozy.Editor.EditorUI.Components
 
         private void VisualUpdate_ListViewHeight()
         {
+            #if UNITY_2021_2_OR_NEWER
+            int listHeight = (int)Mathf.Max(listView.fixedItemHeight * listViewItemsCount, LIST_ITEM_HEIGHT);
+            #else
             int listHeight = Mathf.Max(listView.itemHeight * listViewItemsCount, LIST_ITEM_HEIGHT);
+            #endif
+
             int dynamicHeight = (int)listViewContainer.resolvedStyle.height;
             int calculatedHeight =
                 listViewItemsCount == 0
@@ -363,14 +378,25 @@ namespace Doozy.Editor.EditorUI.Components
 
         public FluidListView SetItemHeight(int itemHeight)
         {
+            #if UNITY_2021_2_OR_NEWER
+            listView.fixedItemHeight = itemHeight;
+            #else
             listView.itemHeight = itemHeight;
+            #endif
+            
             return this;
         }
 
         public FluidListView ShowItemIndex(bool show)
         {
             showItemIndex = show;
+            
+            #if UNITY_2021_2_OR_NEWER
+            listView.Rebuild();
+            #else
             listView.Refresh();
+            #endif
+            
             return this;
         }
 
@@ -388,7 +414,7 @@ namespace Doozy.Editor.EditorUI.Components
             schedule.Execute(UpdateHeight);
             schedule.Execute(UpdateHeight).ExecuteLater(50);
             UpdateHeight();
-            
+
             void UpdateHeight()
             {
                 hasDynamicHeight = dynamicHeight;
@@ -396,13 +422,13 @@ namespace Doozy.Editor.EditorUI.Components
 
                 if (dynamicHeight)
                 {
-                    listViewContainer.RegisterCallback<GeometryChangedEvent>(evt =>
+                    listViewContainer.RegisterCallback<GeometryChangedEvent>(_ =>
                     {
                         listViewContainer.schedule.Execute(VisualUpdate_ListViewHeight);
                     });
                 }
             }
-            
+
             return this;
         }
 
@@ -436,8 +462,7 @@ namespace Doozy.Editor.EditorUI.Components
         {
             if (hasSearch == enabled) return this;
 
-            if (flexibleSpaceBeforeSearchBox == null)
-                flexibleSpaceBeforeSearchBox = DesignUtils.flexibleSpace;
+            flexibleSpaceBeforeSearchBox ??= DesignUtils.flexibleSpace;
 
             hasSearch = enabled;
             if (hasSearch)
@@ -448,7 +473,7 @@ namespace Doozy.Editor.EditorUI.Components
                 hasToolbar = true;
                 toolbarContainer.SetStyleDisplay(DisplayStyle.Flex);
 
-                toolbarContainer.RegisterCallback<GeometryChangedEvent>(evt => VisualUpdate_UpdateSearchBoxWidth());
+                toolbarContainer.RegisterCallback<GeometryChangedEvent>(_ => VisualUpdate_UpdateSearchBoxWidth());
 
                 m_SearchBoxMinWidthAnimation =
                     Reaction.Get<FloatReaction>()
@@ -460,7 +485,7 @@ namespace Doozy.Editor.EditorUI.Components
                 m_SearchBoxMinWidthAnimation.setter = value => searchBox.SetStyleMinWidth(value);
                 m_SearchBoxMinWidthAnimation.SetValue(SEARCH_BOX_MIN_WIDTH);
 
-                searchBox.OnShowSearchResultsCallback += searching =>
+                searchBox.OnShowSearchResultsCallback += _ =>
                 {
                     foreach (VisualElement toolbarElement in toolbarElements)
                         toolbarElement.SetStyleDisplay(inSearchMode ? DisplayStyle.None : DisplayStyle.Flex);
@@ -472,7 +497,7 @@ namespace Doozy.Editor.EditorUI.Components
             {
                 toolbarContainer.Remove(flexibleSpaceBeforeSearchBox);
                 toolbarContainer.Remove(searchBox);
-                toolbarContainer.UnregisterCallback<GeometryChangedEvent>(evt => VisualUpdate_UpdateSearchBoxWidth());
+                toolbarContainer.UnregisterCallback<GeometryChangedEvent>(_ => VisualUpdate_UpdateSearchBoxWidth());
 
                 m_SearchBoxMinWidthAnimation.setter = null;
                 m_SearchBoxMinWidthAnimation.Stop();

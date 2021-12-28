@@ -130,8 +130,8 @@ namespace Doozy.Runtime.Signals
         /// </summary>
         internal static Guid GetNewStreamKey()
         {
-            Guid guid;
-            bool generateNewId = true;
+            var guid = Guid.NewGuid();
+            bool generateNewId = Streams.ContainsKey(guid);
             while (generateNewId)
             {
                 guid = Guid.NewGuid();
@@ -148,15 +148,15 @@ namespace Doozy.Runtime.Signals
             AddStream(new SignalStream(GetNewStreamKey()));
 
         public static SignalStream GetTypeStream(string typeName) =>
-            GetStream(typeName, k_TypeCategory);
+            GetStream(k_TypeCategory, typeName);
 
         /// <summary>
-        /// Get the stream with the given streamName and streamCategory.
-        /// If not found, this method creates a new stream with the given stream name and category, and returns a reference to it
+        /// Get the stream with the given stream category and name.
+        /// If not found, this method creates a new stream with the given stream category and name, and returns a reference to it
         /// </summary>
+        /// <param name="streamCategory"> Stream category </param>
         /// <param name="streamName"> Stream name </param>
-        /// <param name="streamCategory"> Stream category</param>
-        public static SignalStream GetStream(string streamName, string streamCategory = SignalStream.k_DefaultCategory)
+        public static SignalStream GetStream(string streamCategory, string streamName)
         {
             streamCategory = streamCategory.Trim();
             if (streamCategory.IsNullOrEmpty())
@@ -188,11 +188,11 @@ namespace Doozy.Runtime.Signals
             Streams.ContainsKey(streamKey) ? Streams[streamKey] : null;
 
         /// <summary>
-        /// Find the stream with the given stream name and category.
+        /// Find the stream with the given stream category and name.
         /// If not found, this method returns null </summary>
-        /// <param name="streamName"> Stream name </param>
         /// <param name="streamCategory"> Stream category </param>
-        public static SignalStream FindStream(string streamName, string streamCategory = SignalStream.k_DefaultCategory)
+        /// <param name="streamName"> Stream name </param>
+        public static SignalStream FindStream(string streamCategory, string streamName)
         {
             streamCategory = streamCategory.Trim();
             if (streamCategory.IsNullOrEmpty())
@@ -242,149 +242,80 @@ namespace Doozy.Runtime.Signals
         /// <summary> Whenever a Signal is sent, this action gets invoked </summary>
         public static UnityAction<Signal> OnSignal;
 
-        #region Send Signal - using a StreamName and a StreamCategory
+        #region Send Signal - using a stream Category and Name
 
-        /// <summary> Send a Signal on the stream with the given stream name and category </summary>
-        /// <param name="streamName"> Target stream name </param>
+        /// <summary> Send a Signal on the stream with the given stream category and name </summary>
         /// <param name="streamCategory"> Target stream category </param>
+        /// <param name="streamName"> Target stream name </param>
         /// <param name="message"> Text message used to pass info about this Signal </param>
-        public static bool SendSignal(string streamName, string streamCategory, string message) => 
-            SendSignal(GetStream(streamName, streamCategory), message);
+        public static bool SendSignal(string streamCategory, string streamName, string message = "") => 
+            SendSignal(GetStream(streamCategory, streamName), message);
 
-        /// <summary> Send a Signal on the stream with the given stream name and category, with a reference to the GameObject from where it is sent </summary>
-        /// <param name="streamName"> Target stream name </param>
+        /// <summary> Send a Signal on the stream with the given stream category and name, with a reference to the GameObject from where it is sent </summary>
         /// <param name="streamCategory"> Target stream category </param>
+        /// <param name="streamName"> Target stream name </param>
         /// <param name="signalSource"> Reference to the GameObject from where this Signal is sent </param>
         /// <param name="message"> Text message used to pass info about this Signal </param>
-        public static bool SendSignal(string streamName, string streamCategory, GameObject signalSource, string message = "") => 
-            SendSignal(GetStream(streamName, streamCategory), signalSource, message);
+        public static bool SendSignal(string streamCategory, string streamName, GameObject signalSource, string message = "") => 
+            SendSignal(GetStream(streamCategory, streamName), signalSource, message);
 
-        /// <summary> Send a Signal on the stream with the given stream name and category, with a reference to the SignalProvider that sent it </summary>
-        /// <param name="streamName"> Target stream name </param>
+        /// <summary> Send a Signal on the stream with the given stream category and name, with a reference to the SignalProvider that sent it </summary>
         /// <param name="streamCategory"> Target stream category </param>
+        /// <param name="streamName"> Target stream name </param>
         /// <param name="signalProvider"> Reference to the SignalProvider that sends this Signal </param>
         /// <param name="message"> Text message used to pass info about this Signal </param>
-        public static bool SendSignal(string streamName, string streamCategory, SignalProvider signalProvider, string message = "") => 
-            SendSignal(GetStream(streamName, streamCategory), signalProvider, message);
+        public static bool SendSignal(string streamCategory, string streamName, SignalProvider signalProvider, string message = "") => 
+            SendSignal(GetStream(streamCategory, streamName), signalProvider, message);
 
-        /// <summary> Send a Signal on the stream with the given stream name and category, with a reference to the Object that sent it </summary>
-        /// <param name="streamName"> Target stream name </param>
+        /// <summary> Send a Signal on the stream with the given stream category and name, with a reference to the Object that sent it </summary>
         /// <param name="streamCategory"> Target stream category </param>
+        /// <param name="streamName"> Target stream name </param>
         /// <param name="signalSender"> Reference to the Object that sends this Signal </param>
         /// <param name="message"> Text message used to pass info about this Signal </param>
-        public static bool SendSignal(string streamName, string streamCategory, Object signalSender, string message = "") => 
-            SendSignal(GetStream(streamName, streamCategory), signalSender, message);
+        public static bool SendSignal(string streamCategory, string streamName, Object signalSender, string message = "") => 
+            SendSignal(GetStream(streamCategory, streamName), signalSender, message);
 
         #endregion
 
-        #region Send MetaSignal - using a StreamName and a StreamCategory
+        #region Send MetaSignal - using a stream Category and Name
 
-        /// <summary> Send a MetaSignal on the stream with the given stream name and category </summary>
-        /// <param name="streamName"> Target stream name </param>
+        /// <summary> Send a MetaSignal on the stream with the given stream category and name </summary>
         /// <param name="streamCategory"> Target stream category </param>
+        /// <param name="streamName"> Target stream name </param>
         /// <param name="signalValue"> Signal value </param>
         /// <param name="message"> Text message used to pass info about this Signal </param>
-        public static bool SendSignal<T>(string streamName, string streamCategory, T signalValue, string message = "") => 
-            SendSignal(GetStream(streamName, streamCategory), signalValue, message);
+        public static bool SendSignal<T>(string streamCategory, string streamName, T signalValue, string message = "") => 
+            SendSignal(GetStream(streamCategory, streamName), signalValue, message);
 
-        /// <summary> Send a MetaSignal on the stream with the given stream name and category, with a reference to the GameObject from where it is sent </summary>
-        /// <param name="streamName"> Target stream name </param>
+        /// <summary> Send a MetaSignal on the stream with the given stream category and name, with a reference to the GameObject from where it is sent </summary>
         /// <param name="streamCategory"> Target stream category </param>
-        /// <param name="signalValue"> Signal value </param>
-        /// <param name="signalSource"> Reference to the GameObject from where this Signal is sent </param>
-        /// <param name="message"> Text message used to pass info about this Signal </param>
-        /// <typeparam name="T"> Signal value type </typeparam>
-        public static bool SendSignal<T>(string streamName, string streamCategory, T signalValue, GameObject signalSource, string message = "") => 
-            SendSignal(GetStream(streamName, streamCategory), signalValue, signalSource, message);
-
-        /// <summary> Send a MetaSignal on the stream with the given stream name and category, with a reference to the SignalProvider that sent it </summary>
-        /// <param name="streamName"> Target stream name </param>
-        /// <param name="streamCategory"> Target stream category </param>
-        /// <param name="signalValue"> Signal value </param>
-        /// <param name="signalProvider"> Reference to the SignalProvider that sends this Signal </param>
-        /// <param name="message"> Text message used to pass info about this Signal </param>
-        /// <typeparam name="T"> Signal value type </typeparam>
-        public static bool SendSignal<T>(string streamName, string streamCategory, T signalValue, SignalProvider signalProvider, string message = "") => 
-            SendSignal(GetStream(streamName, streamCategory), signalValue, signalProvider, message);
-
-        /// <summary> Send a MetaSignal on the stream with the given stream name and category, with a reference to the Object that sent it </summary>
-        /// <param name="streamName"> Target stream name </param>
-        /// <param name="streamCategory"> Target stream category </param>
-        /// <param name="signalValue"> Signal value </param>
-        /// <param name="signalSender"> Reference to the Object that sends this Signal </param>
-        /// <param name="message"> Text message used to pass info about this Signal </param>
-        /// <typeparam name="T"> Signal value type </typeparam>
-        public static bool SendSignal<T>(string streamName, string streamCategory, T signalValue, Object signalSender, string message = "") => 
-            SendSignal(GetStream(streamName, streamCategory), signalValue, signalSender, message);
-
-        #endregion
-
-        #region Send Signal - using a StreamName and default StreamCategory
-
-        /// <summary> Send a Signal on the stream with the given stream name and default category </summary>
-        /// <param name="streamName"> Target stream name </param>
-        /// <param name="message"> Text message used to pass info about this Signal </param>
-        public static bool SendSignal(string streamName, string message = "") => 
-            SendSignal(GetStream(streamName), message);
-
-        /// <summary> Send a Signal on the stream with the given stream name and default category, with a reference to the GameObject from where it is sent </summary>
-        /// <param name="streamName"> Target stream name </param>
-        /// <param name="signalSource"> Reference to the GameObject from where this Signal is sent </param>
-        /// <param name="message"> Text message used to pass info about this Signal </param>
-        public static bool SendSignal(string streamName, GameObject signalSource, string message = "") => 
-            SendSignal(GetStream(streamName), signalSource, message);
-
-        /// <summary> Send a Signal on the stream with the given stream name and default category, with a reference to the SignalProvider that sent it </summary>
-        /// <param name="streamName"> Target stream name </param>
-        /// <param name="signalProvider"> Reference to the SignalProvider that sends this Signal </param>
-        /// <param name="message"> Text message used to pass info about this Signal </param>
-        public static bool SendSignal(string streamName, SignalProvider signalProvider, string message = "") => 
-            SendSignal(GetStream(streamName), signalProvider, message);
-
-        /// <summary> Send a Signal on the stream with the given stream name and default category, with a reference to the Object that sent it </summary>
-        /// <param name="streamName"> Target stream name </param>
-        /// <param name="signalSender"> Reference to the Object that sends this Signal </param>
-        /// <param name="message"> Text message used to pass info about this Signal </param>
-        public static bool SendSignal(string streamName, Object signalSender, string message = "") => 
-            SendSignal(GetStream(streamName), signalSender, message);
-
-        #endregion
-
-        #region Send MetaSignal - using a StreamName and default StreamCategory
-
-        /// <summary> Send a MetaSignal on the stream with the given stream name and default category </summary>
-        /// <param name="streamName"> Target stream name </param>
-        /// <param name="signalValue"> Signal value </param>
-        /// <param name="message"> Text message used to pass info about this Signal </param>
-        public static bool SendSignal<T>(string streamName, T signalValue, string message = "") => 
-            SendSignal(GetStream(streamName), signalValue, message);
-
-        /// <summary> Send a MetaSignal on the stream with the given stream name and default category, with a reference to the GameObject from where it is sent </summary>
         /// <param name="streamName"> Target stream name </param>
         /// <param name="signalValue"> Signal value </param>
         /// <param name="signalSource"> Reference to the GameObject from where this Signal is sent </param>
         /// <param name="message"> Text message used to pass info about this Signal </param>
         /// <typeparam name="T"> Signal value type </typeparam>
-        public static bool SendSignal<T>(string streamName, T signalValue, GameObject signalSource, string message = "") => 
-            SendSignal(GetStream(streamName), signalValue, signalSource, message);
+        public static bool SendSignal<T>(string streamCategory, string streamName, T signalValue, GameObject signalSource, string message = "") => 
+            SendSignal(GetStream(streamCategory, streamName), signalValue, signalSource, message);
 
-        /// <summary> Send a MetaSignal on the stream with the given stream name and default category, with a reference to the SignalProvider that sent it </summary>
+        /// <summary> Send a MetaSignal on the stream with the given stream category and name, with a reference to the SignalProvider that sent it </summary>
+        /// <param name="streamCategory"> Target stream category </param>
         /// <param name="streamName"> Target stream name </param>
         /// <param name="signalValue"> Signal value </param>
         /// <param name="signalProvider"> Reference to the SignalProvider that sends this Signal </param>
         /// <param name="message"> Text message used to pass info about this Signal </param>
         /// <typeparam name="T"> Signal value type </typeparam>
-        public static bool SendSignal<T>(string streamName, T signalValue, SignalProvider signalProvider, string message = "") => 
-            SendSignal(GetStream(streamName), signalValue, signalProvider, message);
+        public static bool SendSignal<T>(string streamCategory, string streamName, T signalValue, SignalProvider signalProvider, string message = "") => 
+            SendSignal(GetStream(streamCategory, streamName), signalValue, signalProvider, message);
 
-        /// <summary> Send a MetaSignal on the stream with the given stream name and default category, with a reference to the Object that sent it </summary>
+        /// <summary> Send a MetaSignal on the stream with the given stream category and name, with a reference to the Object that sent it </summary>
+        /// <param name="streamCategory"> Target stream category </param>
         /// <param name="streamName"> Target stream name </param>
         /// <param name="signalValue"> Signal value </param>
         /// <param name="signalSender"> Reference to the Object that sends this Signal </param>
         /// <param name="message"> Text message used to pass info about this Signal </param>
         /// <typeparam name="T"> Signal value type </typeparam>
-        public static bool SendSignal<T>(string streamName, T signalValue, Object signalSender, string message = "") => 
-            SendSignal(GetStream(streamName), signalValue, signalSender, message);
+        public static bool SendSignal<T>(string streamCategory, string streamName, T signalValue, Object signalSender, string message = "") => 
+            SendSignal(GetStream(streamCategory, streamName), signalValue, signalSender, message);
 
         #endregion
 

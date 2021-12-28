@@ -73,8 +73,8 @@ namespace Doozy.Editor.UIManager.Automation.Generators
                 }
             }
 
-            templateData = templateData.Replace("//ACCESSOR//", accessorStringBuilder.ToString().RemoveLast(2));
-            templateData = templateData.Replace("//DATA//", dataStringBuilder.ToString().RemoveLast(2));
+            templateData = templateData.Replace("//ACCESSOR//", accessorStringBuilder.ToString().RemoveLast(Environment.NewLine.Length));
+            templateData = templateData.Replace("//DATA//", dataStringBuilder.ToString().RemoveLast(Environment.NewLine.Length));
             return templateData;
         }
     }

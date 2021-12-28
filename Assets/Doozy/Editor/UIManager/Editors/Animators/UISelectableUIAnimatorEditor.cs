@@ -71,8 +71,8 @@ namespace Doozy.Editor.UIManager.Editors.Animators
                     .AddManualButton("https://doozyentertainment.atlassian.net/wiki/spaces/DUI4/pages/1048543277/UISelectable+UI+Animator?atlOrigin=eyJpIjoiMDNjZTc2YWZhZjlhNDU0N2E1YzdmOThjMzQwODJmMWIiLCJwIjoiYyJ9")
                     .AddYouTubeButton("www.youtube.com/c/DoozyEntertainment");
             
-            foreach (UISelectionState state in UISelectable.uiSelectionStates)
-                castedTarget.GetAnimation(state).SetTarget(castedTarget.rectTransform);
+            // foreach (UISelectionState state in UISelectable.uiSelectionStates)
+            //     castedTarget.GetAnimation(state).SetTarget(castedTarget.rectTransform);
             
             normalAnimatedContainer.AddOnShowCallback(() => normalAnimatedContainer.Bind(serializedObject));
             highlightedAnimatedContainer.AddOnShowCallback(() => highlightedAnimatedContainer.Bind(serializedObject));

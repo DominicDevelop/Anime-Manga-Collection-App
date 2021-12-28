@@ -30,7 +30,7 @@ namespace Doozy.Runtime.UIManager.Containers
 
         private static SignalStream s_stream;
         /// <summary> Signal stream for this component type </summary>
-        public static SignalStream stream => s_stream ??= SignalsService.GetStream(nameof(UIView), k_StreamCategory);
+        public static SignalStream stream => s_stream ??= SignalsService.GetStream(k_StreamCategory, nameof(UIView));
 
         /// <summary> UIView signal receiver </summary>
         private SignalReceiver receiver { get; set; }

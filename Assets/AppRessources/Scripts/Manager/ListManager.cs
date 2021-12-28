@@ -1,19 +1,15 @@
 using Doozy.Runtime.Signals;
 using Doozy.Runtime.UIManager.Containers;
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
-using UnityEngine.Networking;
 using UnityEngine.UI;
-using WebP;
 
 public class ListManager : MonoSingleton<ListManager>
 {
     #region Constants
     #region PATHES
-    private readonly string IMAGE_CDN_PATH = "https://cdn.anisearch.de/images/{0}";
+    private static readonly string IMAGE_CDN_PATH = "https://cdn.anisearch.de/images/{0}";
     #endregion
 
     #region REGEX
@@ -42,7 +38,6 @@ public class ListManager : MonoSingleton<ListManager>
             return;
 
         Signal.Send(SIGNAL_SHOW_SEARCH_RESULT_LIST, CATEGORY_NAVIGATION, "Show the result of a search in the Search List View");
-        Debug.Log("Test");
 
         _prevSearchTerm = _searchTerm;
 
@@ -73,7 +68,14 @@ public class ListManager : MonoSingleton<ListManager>
                     _resultListElems.Add(mangaId, listElemGO);
                 }
 
-                StartCoroutine(SetCoverByImageURL(listElemGO, listElemScript, imagePath));
+                RawImage imageToSet = listElemGO.GetComponentInChildren<RawImage>();
+
+                StartCoroutine(WebpUtility.DownloadWebpImage_Coroutine(string.Format(IMAGE_CDN_PATH, imagePath), (cover) => {
+                    imageToSet.texture = cover;
+                    listElemScript.Cover = cover;
+                }));
+
+                
             }
         }
     }
@@ -87,23 +89,8 @@ public class ListManager : MonoSingleton<ListManager>
     }
 
     #region Private Methohds
-    private IEnumerator SetCoverByImageURL(GameObject mangaListElemGO, ListElem mangaListElemScript, string url) {
-        RawImage listElemImage = mangaListElemGO.GetComponentInChildren<RawImage>();
-
-        using (var request = UnityWebRequestTexture.GetTexture(string.Format(IMAGE_CDN_PATH, url))) {
-            yield return request.SendWebRequest();
-
-            if (request.result != UnityWebRequest.Result.Success) {
-                Debug.LogError(request.error);
-            } else {
-                var textureBytes = request.downloadHandler.data;
-
-                Texture2D cover = Texture2DExt.CreateTexture2DFromWebP(textureBytes, lMipmaps: true, lLinear: true, lError: out Error lError);
-                listElemImage.texture = cover;
-
-                mangaListElemScript.Cover = cover;
-            }
-        }
+    private void SetCoverByImageURL(GameObject mangaListElemGO, ListElem mangaListElemScript, string url) {
+        
     }
     #endregion
 }

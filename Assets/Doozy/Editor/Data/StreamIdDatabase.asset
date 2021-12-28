@@ -14,35 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Database:
     Items:
-    - Category: Input
-      Name: BackButton
-    - Category: Music
-      Name: Mute
-    - Category: Music
-      Name: Pause
-    - Category: Music
-      Name: Resume
-    - Category: Music
-      Name: Start
-    - Category: Music
-      Name: Stop
-    - Category: Navigate
-      Name: Down
-    - Category: Navigate
-      Name: Left
-    - Category: Navigate
-      Name: Right
-    - Category: Navigate
-      Name: ShowInfoPanel
-    - Category: Navigate
-      Name: ShowSearchResultList
-    - Category: Navigate
-      Name: Up
     - Category: None
       Name: None
-    - Category: UIContainer
-      Name: UIView
-    - Category: UISelectable
-      Name: UIButton
-    - Category: UISelectable
-      Name: UIToggle

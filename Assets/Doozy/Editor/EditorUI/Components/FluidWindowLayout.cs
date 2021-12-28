@@ -99,7 +99,7 @@ namespace Doozy.Editor.EditorUI.Components
 
                 if (sideMenu.selectedMenuIndex > sideMenu.buttons.Count - 1)
                     return;
-                
+
                 FluidToggleButtonTab sideMenuButton = sideMenu.buttons[sideMenu.selectedMenuIndex];
                 sideMenuButton?.SetIsOn(true);
             };
@@ -172,7 +172,11 @@ namespace Doozy.Editor.EditorUI.Components
         protected void SideMenuButtonClick(FluidListView fluidListView, VisualElement visualElement, FluidButton selectAssetButton)
         {
             //SET LIST VIEW PREFERRED HEIGHT (do not use our dynamic height option as Unity is VERY SLOW in calculating its own listview height --- kill me now!!!)
+            #if UNITY_2021_2_OR_NEWER
+            fluidListView.SetPreferredListHeight((int)fluidListView.listView.fixedItemHeight * maximumNumberOfItemsVisibleAtOnce);
+            #else
             fluidListView.SetPreferredListHeight(fluidListView.listView.itemHeight * maximumNumberOfItemsVisibleAtOnce);
+            #endif
 
             //HIDE LIST VIEW TOOLBAR WHILE SEARCHING
             fluidListView.HideToolbarWhileSearching(false);
@@ -282,13 +286,13 @@ namespace Doozy.Editor.EditorUI.Components
         protected static FluidButton GetNewSelectAssetButton(string buttonName, Texture2D buttonIcon, Object asset)
         {
             string assetPath = AssetDatabase.GetAssetPath(asset);
-            FluidButton button = 
+            FluidButton button =
                 FluidButton.Get()
-                .SetLabelText($"{buttonName}")
-                .SetIcon(buttonIcon)
-                .SetOnClick(() => Selection.activeObject = asset)
-                .SetButtonStyle(ButtonStyle.Contained)
-                .SetElementSize(ElementSize.Small);
+                    .SetLabelText($"{buttonName}")
+                    .SetIcon(buttonIcon)
+                    .SetOnClick(() => Selection.activeObject = asset)
+                    .SetButtonStyle(ButtonStyle.Contained)
+                    .SetElementSize(ElementSize.Small);
 
             button.buttonLabel.SetStyleTextAlign(TextAnchor.MiddleLeft); //set button label text alignment
 

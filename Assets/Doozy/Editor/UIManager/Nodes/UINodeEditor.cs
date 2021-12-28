@@ -164,9 +164,15 @@ namespace Doozy.Editor.UIManager.Nodes
                     UpdateItemsSource();
                 };
             };
-            
+
+            #if UNITY_2021_2_OR_NEWER
+            lv.listView.fixedItemHeight = 80;
+            lv.SetPreferredListHeight((int)lv.listView.fixedItemHeight * 10);
+            #else
             lv.listView.itemHeight = 80;
             lv.SetPreferredListHeight(lv.listView.itemHeight * 10);
+            #endif
+
             lv.SetDynamicListHeight(false);
             lv.UseSmallEmptyListPlaceholder(true);
             lv.HideFooter(true);
@@ -181,7 +187,7 @@ namespace Doozy.Editor.UIManager.Nodes
                 arrayProperty.serializedObject.ApplyModifiedProperties();
                 UpdateItemsSource();
             };
-            
+
             int arraySize = -1;
             lv.schedule.Execute(() =>
             {
@@ -202,10 +208,10 @@ namespace Doozy.Editor.UIManager.Nodes
             }
 
             UpdateItemsSource();
-            
+
             return lv;
         }
-        
+
         private static VisualElement showHideContainer =>
             DesignUtils.column
                 .SetStyleBorderRadius(6)

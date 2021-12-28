@@ -137,7 +137,6 @@ namespace Doozy.Runtime.UIManager.Nodes
                 var listener = new StreamNodyListener(this, portData.SignalPayload, () => GoToNextNode(port));
                 streamListeners.Add(listener);
                 listener.Start();
-                break;
             }
         }
 

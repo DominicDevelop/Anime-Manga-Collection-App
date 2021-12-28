@@ -14,35 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Database:
     Items:
-    - Category: Auto
-      Name: Load
-    - Category: Auto
-      Name: Login
-    - Category: Auto
-      Name: Refresh
-    - Category: Auto
-      Name: Reset
-    - Category: Auto
-      Name: Resume
-    - Category: Auto
-      Name: Save
-    - Category: Mute
-      Name: Everything
-    - Category: Mute
-      Name: Music
-    - Category: Mute
-      Name: SFX
-    - Category: Mute
-      Name: Sound
     - Category: None
       Name: None
-    - Category: Remember
-      Name: Credentials
-    - Category: Remember
-      Name: Email
-    - Category: Remember
-      Name: Password
-    - Category: Remember
-      Name: Settings
-    - Category: Remember
-      Name: Username
