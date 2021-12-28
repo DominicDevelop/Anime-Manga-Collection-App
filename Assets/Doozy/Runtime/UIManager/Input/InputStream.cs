@@ -14,7 +14,7 @@ namespace Doozy.Runtime.UIManager.Input
         public const string k_StreamName = nameof(InputStream);
         
         private static SignalStream s_stream;
-        public static SignalStream stream => s_stream ??= SignalsService.GetStream(k_StreamName, k_StreamCategory);
+        public static SignalStream stream => s_stream ??= SignalsService.GetStream(k_StreamCategory, k_StreamName);
 
         public const string k_NavigateStreamCategory = "Navigate";
         public const string k_NavigateLeft = "Left";
@@ -26,10 +26,10 @@ namespace Doozy.Runtime.UIManager.Input
         private static SignalStream s_navigateRightStream;
         private static SignalStream s_navigateUpStream;
         private static SignalStream s_navigateDownStream;
-        public static SignalStream navigateLeftStream => s_navigateLeftStream ??= SignalsService.GetStream(k_NavigateLeft, k_NavigateStreamCategory);
-        public static SignalStream navigateRightStream => s_navigateRightStream ??= SignalsService.GetStream(k_NavigateRight, k_NavigateStreamCategory);
-        public static SignalStream navigateUpStream => s_navigateUpStream ??= SignalsService.GetStream(k_NavigateUp, k_NavigateStreamCategory);
-        public static SignalStream navigateDownStream => s_navigateDownStream ??= SignalsService.GetStream(k_NavigateDown, k_NavigateStreamCategory);
+        public static SignalStream navigateLeftStream => s_navigateLeftStream ??= SignalsService.GetStream(k_NavigateStreamCategory, k_NavigateLeft);
+        public static SignalStream navigateRightStream => s_navigateRightStream ??= SignalsService.GetStream(k_NavigateStreamCategory, k_NavigateRight);
+        public static SignalStream navigateUpStream => s_navigateUpStream ??= SignalsService.GetStream(k_NavigateStreamCategory, k_NavigateUp);
+        public static SignalStream navigateDownStream => s_navigateDownStream ??= SignalsService.GetStream(k_NavigateStreamCategory, k_NavigateDown);
         
         private static SignalReceiver inputStreamReceiver { get; set; }
         private static void ConnectToInputStream()

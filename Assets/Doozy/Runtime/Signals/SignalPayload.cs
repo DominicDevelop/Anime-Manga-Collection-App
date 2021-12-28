@@ -232,7 +232,7 @@ namespace Doozy.Runtime.Signals
         /// <summary> Sends a Signal with the set payload value to the stream with the given stream id </summary>
         public SignalPayload SendSignal()
         {
-            SignalStream stream = SignalsService.GetStream(StreamId.Name, StreamId.Category);
+            SignalStream stream = SignalsService.GetStream(StreamId.Category, StreamId.Name);
 
             switch (SignalValueType)
             {

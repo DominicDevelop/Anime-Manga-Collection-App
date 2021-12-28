@@ -55,7 +55,7 @@ namespace Doozy.Editor.UIManager.Layouts
 
             doozyUiVersionLabel =
                 DesignUtils.fieldLabel
-                    .SetText("DoozyUI Manager\n4.0.0")
+                    .SetText("DoozyUI Manager\n4.0.1")
                     .SetStyleTextAlign(TextAnchor.MiddleCenter)
                     .SetStyleFontSize(11);
 

@@ -107,8 +107,15 @@ namespace Doozy.Editor.Mody.Drawers
                     UpdateItemsSource();
                 };
             };
+
+            #if UNITY_2021_2_OR_NEWER
+            fluidListView.listView.fixedItemHeight = 84;
+            fluidListView.SetPreferredListHeight((int)fluidListView.listView.fixedItemHeight * 4);
+            #else
             fluidListView.listView.itemHeight = 84;
             fluidListView.SetPreferredListHeight(fluidListView.listView.itemHeight * 4);
+            #endif
+
             fluidListView.SetDynamicListHeight(false);
 
             //ADD ITEM BUTTON (plus button)

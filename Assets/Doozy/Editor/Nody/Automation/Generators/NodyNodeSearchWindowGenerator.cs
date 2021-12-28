@@ -63,8 +63,8 @@ namespace Doozy.Editor.Nody.Automation.Generators
                 }
             }
 
-            templateData = templateData.Replace("//SearchTreeEntry//", searchTreeEntryStringBuilder.ToString().RemoveLast(2));
-            templateData = templateData.Replace("//CreateNode//", createNodeStringBuilder.ToString().RemoveLast(2));
+            templateData = templateData.Replace("//SearchTreeEntry//", searchTreeEntryStringBuilder.ToString().RemoveLast(Environment.NewLine.Length));
+            templateData = templateData.Replace("//CreateNode//", createNodeStringBuilder.ToString().RemoveLast(Environment.NewLine.Length));
             return templateData;
         }
 

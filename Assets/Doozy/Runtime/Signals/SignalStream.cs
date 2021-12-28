@@ -63,7 +63,8 @@ namespace Doozy.Runtime.Signals
         /// <summary> Text message used to display custom info about this stream </summary>
         public string infoMessage { get; protected set; }
 
-        private List<ISignalReceiver> tempList { get; set; } = new List<ISignalReceiver>();
+        private HashSet<ISignalReceiver> sendTempList { get; } = new HashSet<ISignalReceiver>();
+        private HashSet<ISignalReceiver> disconnectTempList { get; } = new HashSet<ISignalReceiver>();
 
         internal SignalStream(Guid streamKey)
         {
@@ -120,10 +121,13 @@ namespace Doozy.Runtime.Signals
         /// <summary> Disconnect all receivers from this stream </summary>
         public virtual void DisconnectAllReceivers()
         {
-            tempList.Clear();
-            tempList.AddRange(receivers.Where(r => r != null));
-            tempList.ForEach(DisconnectReceiver);
-            tempList.Clear();
+            receivers.Remove(null);
+            foreach (ISignalReceiver receiver in receivers.ToArray())
+            {
+                if (receiver == null)
+                    continue;
+                DisconnectReceiver(receiver);
+            }
             receivers.Clear();
         }
 
@@ -246,7 +250,7 @@ namespace Doozy.Runtime.Signals
                 //if the value is poolable -> recycle it (save memory allocations)
                 if (previousSignal.hasValue && previousSignal.valueAsObject is IPoolable poolable)
                     poolable.Recycle();
-                
+
                 previousSignal.Recycle();
             }
             previousSignal = currentSignal;
@@ -254,10 +258,8 @@ namespace Doozy.Runtime.Signals
             OnSignal?.Invoke(currentSignal);
             SignalsService.OnSignal?.Invoke(currentSignal);
             receivers.Remove(null);
-            tempList.Clear();
-            tempList.AddRange(receivers);
-            tempList.ForEach(r => r.OnSignal(currentSignal));
-            tempList.Clear();
+            foreach (ISignalReceiver receiver in receivers.ToArray())
+                receiver?.OnSignal(currentSignal);
             return true;
         }
 
@@ -268,13 +270,13 @@ namespace Doozy.Runtime.Signals
             SignalsService.GetStream();
 
         /// <summary>
-        /// Get the stream with the given streamName and streamCategory or,
+        /// Get the stream with the given stream category and name or,
         /// if not found, create a new stream and return a reference to it
         /// </summary>
-        /// <param name="streamCategory"> Stream category</param>
+        /// <param name="streamCategory"> Stream category </param>
         /// <param name="streamName"> Stream name </param>
         public static SignalStream Get(string streamCategory, string streamName) =>
-            SignalsService.GetStream(streamName, streamCategory);
+            SignalsService.GetStream(streamCategory, streamName);
 
         /// <summary> Get the stream with the given stream key. If not found, this method, returns null </summary>
         /// <param name="streamKey"> Stream key to search for </param>

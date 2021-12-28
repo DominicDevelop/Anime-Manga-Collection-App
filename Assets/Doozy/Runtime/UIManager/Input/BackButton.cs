@@ -33,13 +33,13 @@ namespace Doozy.Runtime.UIManager.Input
         private static SignalStream s_streamOnDisabled;
 
         /// <summary> Stream that sends signals when the 'Back' button is fired </summary>
-        public static SignalStream stream => s_stream ??= SignalsService.GetStream(k_StreamName, k_StreamCategory);
+        public static SignalStream stream => s_stream ??= SignalsService.GetStream(k_StreamCategory, k_StreamName);
 
         /// <summary> Stream that sends signals when the 'Back' button functionality was enabled (from the disabled state) </summary>
-        public static SignalStream streamOnEnabled => s_streamOnEnabled ??= SignalsService.GetStream($"{k_StreamName}.Enabled", k_StreamCategory);
+        public static SignalStream streamOnEnabled => s_streamOnEnabled ??= SignalsService.GetStream(k_StreamCategory, $"{k_StreamName}.Enabled");
 
         /// <summary> Stream that sends signals when the 'Back' button functionality was disabled (from the enabled state) </summary>
-        public static SignalStream streamOnDisabled => s_streamOnDisabled ??= SignalsService.GetStream($"{k_StreamName}.Disabled", k_StreamCategory);
+        public static SignalStream streamOnDisabled => s_streamOnDisabled ??= SignalsService.GetStream(k_StreamCategory, $"{k_StreamName}.Disabled");
 
         private static SignalReceiver inputStreamReceiver { get; set; }
         private static void ConnectToInputStream()

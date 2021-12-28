@@ -172,13 +172,20 @@ namespace Doozy.Editor.Mody.Drawers.ModyActions
                     .ShowEmptyListPlaceholder(true)
                     .UseSmallEmptyListPlaceholder(true)
                     .HideFooterWhenEmpty(true);
-            
+
             fluidListView.emptyListPlaceholder.SetIcon(EditorMicroAnimations.EditorUI.Placeholders.EmptyListViewSmall);
-            
+
             fluidListView.listView.selectionType = SelectionType.None;
             fluidListView.listView.itemsSource = itemsSource;
+
+            #if UNITY_2021_2_OR_NEWER
+            fluidListView.listView.fixedItemHeight = 70;
+            fluidListView.SetPreferredListHeight((int)fluidListView.listView.fixedItemHeight * 4);
+            #else
             fluidListView.listView.itemHeight = 70;
             fluidListView.SetPreferredListHeight(fluidListView.listView.itemHeight * 4);
+            #endif
+
             fluidListView.listView.makeItem = () => new PropertyFluidListViewItem(fluidListView);
             fluidListView.listView.bindItem = (element, i) =>
             {
@@ -209,7 +216,7 @@ namespace Doozy.Editor.Mody.Drawers.ModyActions
                 arrayProperty.serializedObject.ApplyModifiedProperties();
                 UpdateItemsSource();
             };
-            
+
             UpdateItemsSource();
 
             int arraySize = arrayProperty.arraySize;
@@ -220,7 +227,7 @@ namespace Doozy.Editor.Mody.Drawers.ModyActions
                 UpdateItemsSource();
 
             }).Every(100);
-            
+
             void UpdateItemsSource()
             {
                 itemsSource.Clear();

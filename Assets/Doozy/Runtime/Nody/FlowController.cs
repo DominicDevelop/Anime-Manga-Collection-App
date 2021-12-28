@@ -11,6 +11,11 @@ using UnityEngine;
 
 namespace Doozy.Runtime.Nody
 {
+    /// <summary>
+    /// The Flow Controller is responsible of managing a Flow Graph.
+    /// It can control the graph either as a local graph (instance) or a global graph.
+    /// </summary>
+    [AddComponentMenu("Doozy/UI/Nody/Flow Controller")]
     public class FlowController : MonoBehaviour, IUseMultiplayerInfo
     {
         /// <summary> Reference to the UIManager Input Settings </summary>

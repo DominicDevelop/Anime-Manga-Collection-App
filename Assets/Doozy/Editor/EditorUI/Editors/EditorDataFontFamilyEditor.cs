@@ -144,8 +144,15 @@ namespace Doozy.Editor.EditorUI.Editors
                     }
                 };
             };
+            
+            #if UNITY_2021_2_OR_NEWER
+            fluidListView.listView.fixedItemHeight = 66;
+            fluidListView.SetPreferredListHeight((int)fluidListView.listView.fixedItemHeight * 6);
+            #else
             fluidListView.listView.itemHeight = 66;
             fluidListView.SetPreferredListHeight(fluidListView.listView.itemHeight * 6);
+            #endif
+            
             fluidListView.SetDynamicListHeight(false);
 
             //ADD ITEM BUTTON (plus button)

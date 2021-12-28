@@ -27,7 +27,7 @@ namespace Doozy.Runtime.UIManager.Components
     {
         private static SignalStream s_stream;
         /// <summary> Signal stream for this component type </summary>
-        public static SignalStream stream => s_stream ?? (s_stream = SignalsService.GetStream(nameof(UIToggle), k_StreamCategory));
+        public static SignalStream stream => s_stream ?? (s_stream = SignalsService.GetStream(k_StreamCategory, nameof(UIToggle)));
 
         /// <summary> All buttons that are active and enabled </summary>
         public static IEnumerable<UIToggle> availableToggles => database.Where(item => item.isActiveAndEnabled);

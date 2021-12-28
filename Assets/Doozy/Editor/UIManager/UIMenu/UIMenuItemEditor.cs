@@ -316,8 +316,15 @@ namespace Doozy.Editor.UIManager.UIMenu
                     UpdateItemsSource();
                 };
             };
+            
+            #if UNITY_2021_2_OR_NEWER
+            tagsFluidListView.listView.fixedItemHeight = 24;
+            tagsFluidListView.SetPreferredListHeight((int)tagsFluidListView.listView.fixedItemHeight * 6);
+            #else
             tagsFluidListView.listView.itemHeight = 24;
             tagsFluidListView.SetPreferredListHeight(tagsFluidListView.listView.itemHeight * 6);
+            #endif
+            
             tagsFluidListView.SetDynamicListHeight(false);
             tagsFluidListView.SetListTitle("Tags");
             tagsFluidListView.SetListDescription("List of tags used to describe this prefab");
@@ -411,13 +418,13 @@ namespace Doozy.Editor.UIManager.UIMenu
 
             iconTexture2DAnimationInfo.SetStyleDisplay(propertyIcon.arraySize > 0 ? DisplayStyle.Flex : DisplayStyle.None);
 
-            content.RegisterCallback<AttachToPanelEvent>(evt =>
+            content.RegisterCallback<AttachToPanelEvent>(_ =>
             {
                 content.RegisterCallback<DragUpdatedEvent>(OnDragUpdate);
                 content.RegisterCallback<DragPerformEvent>(OnDragPerformEvent);
             });
 
-            content.RegisterCallback<DetachFromPanelEvent>(evy =>
+            content.RegisterCallback<DetachFromPanelEvent>(_ =>
             {
                 content.UnregisterCallback<DragUpdatedEvent>(OnDragUpdate);
                 content.UnregisterCallback<DragPerformEvent>(OnDragPerformEvent);
@@ -483,8 +490,15 @@ namespace Doozy.Editor.UIManager.UIMenu
                     UpdateItemsSource();
                 };
             };
+            
+            #if UNITY_2021_2_OR_NEWER
+            iconTextures2DFluidListView.listView.fixedItemHeight = 24;
+            iconTextures2DFluidListView.SetPreferredListHeight((int)iconTextures2DFluidListView.listView.fixedItemHeight * 6);
+            #else
             iconTextures2DFluidListView.listView.itemHeight = 24;
             iconTextures2DFluidListView.SetPreferredListHeight(iconTextures2DFluidListView.listView.itemHeight * 6);
+            #endif
+            
             iconTextures2DFluidListView.SetDynamicListHeight(false);
             iconTextures2DFluidListView.UseSmallEmptyListPlaceholder(true);
             iconTextures2DFluidListView.SetListTitle("Prefab Preview");

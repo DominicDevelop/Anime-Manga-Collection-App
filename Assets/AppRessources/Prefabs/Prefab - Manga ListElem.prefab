@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 6673743942059295117}
   - component: {fileID: 8601335996868172553}
   m_Layer: 5
-  m_Name: MangaListElemPrefab
+  m_Name: Prefab - Manga ListElem
   m_TagString: Manga List Elem
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

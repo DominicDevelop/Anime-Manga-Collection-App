@@ -9,6 +9,7 @@ using Doozy.Editor.Common.Layouts;
 using Doozy.Editor.EditorUI;
 using Doozy.Editor.EditorUI.Components;
 using Doozy.Editor.EditorUI.ScriptableObjects.Colors;
+using Doozy.Editor.Signals.Automation.Generators;
 using Doozy.Editor.Signals.ScriptableObjects;
 using Doozy.Editor.UIManager;
 using Doozy.Runtime.Common;
@@ -35,6 +36,8 @@ namespace Doozy.Editor.Signals.Layouts
         protected override Func<List<ScriptableObject>, bool> importDatabaseHandler => StreamIdDatabase.instance.ImportRoamingDatabases;
         protected override string roamingDatabaseTypeName => nameof(StreamIdRoamingDatabase);
 
+        protected override UnityAction runEnumGenerator => () => StreamIdExtensionGenerator.Run(true, false, true);
+        
         public StreamsDatabaseWindowLayout()
         {
             AddHeader("Streams Database", "Stream Ids", animatedIconTextures);

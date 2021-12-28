@@ -23,7 +23,7 @@ namespace Doozy.Runtime.UIManager.Components
     public partial class UIButton : UISelectableComponent<UIButton>, IPointerClickHandler, ISubmitHandler
     {
         private static SignalStream s_stream;
-        public static SignalStream stream => s_stream ??= SignalsService.GetStream(nameof(UIButton), k_StreamCategory);
+        public static SignalStream stream => s_stream ??= SignalsService.GetStream(k_StreamCategory, nameof(UIButton));
 
         /// <summary> All buttons that are active and enabled </summary>
         public static IEnumerable<UIButton> availableButtons => database.Where(item => item.isActiveAndEnabled);

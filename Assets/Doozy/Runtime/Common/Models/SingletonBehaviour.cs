@@ -30,9 +30,9 @@ namespace Doozy.Runtime.Common
 			}
 		}
 		
-		[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-		private static void RunOnStart() =>
-			Application.quitting += () => applicationIsQuitting = false;
+		// [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+		// private static void RunOnStart() =>
+		// 	Application.quitting += () => applicationIsQuitting = false;
 
 		protected virtual void OnApplicationQuit() =>
 			applicationIsQuitting = true;
