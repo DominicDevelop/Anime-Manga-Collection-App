@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2015 - 2021 Doozy Entertainment. All Rights Reserved.
+﻿// Copyright (c) 2015 - 2022 Doozy Entertainment. All Rights Reserved.
 // This code can only be used under the standard Unity Asset Store End User License Agreement
 // A Copy of the EULA APPENDIX 1 is available at http://unity3d.com/company/legal/as_terms
 
@@ -22,7 +22,7 @@ namespace Doozy.Runtime.Reactor.ScriptableObjects
     public class UIAnimationPreset : ScriptableObject
     {
         private const string DEFAULT_ASSET_FILENAME = "AnimationPreset";
-        private static string dataFolderPath => $"{RuntimePath.path}/_Data/UIAnimationPresets";
+        private static string dataFolderPath => $"{RuntimePath.path}/Data/UIAnimationPresets";
         private string dataFileName => DataFileName(animationType, category, presetName);
         private string dataFilePath => $"{dataFolderPath}/{dataFileName}";
 

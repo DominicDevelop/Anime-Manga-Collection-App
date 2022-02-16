@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2015 - 2021 Doozy Entertainment. All Rights Reserved.
+﻿// Copyright (c) 2015 - 2022 Doozy Entertainment. All Rights Reserved.
 // This code can only be used under the standard Unity Asset Store End User License Agreement
 // A Copy of the EULA APPENDIX 1 is available at http://unity3d.com/company/legal/as_terms
 
@@ -10,6 +10,7 @@ using Doozy.Runtime.Reactor.Easings;
 using Doozy.Runtime.Reactor.Internal;
 using Doozy.Runtime.Reactor.Reactions;
 using Doozy.Runtime.UIElements.Extensions;
+using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UIElements;
 
@@ -186,7 +187,8 @@ namespace Doozy.Editor.EditorUI.Components
         private void OnGeometryChanged(GeometryChangedEvent evt)
         {
             // Debug.Log($"{name}.{nameof(OnGeometryChanged)}: {evt}");
-            RecalculateValues();
+            // RecalculateValues();
+            UpdateContainer();
             if (!m_ShowContainer) return;
             if (reaction == null) return;
             if (reaction.isActive) return;

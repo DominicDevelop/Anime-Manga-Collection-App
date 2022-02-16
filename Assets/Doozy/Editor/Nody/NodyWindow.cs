@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2015 - 2021 Doozy Entertainment. All Rights Reserved.
+﻿// Copyright (c) 2015 - 2022 Doozy Entertainment. All Rights Reserved.
 // This code can only be used under the standard Unity Asset Store End User License Agreement
 // A Copy of the EULA APPENDIX 1 is available at http://unity3d.com/company/legal/as_terms
 
@@ -24,16 +24,16 @@ namespace Doozy.Editor.Nody
     public class NodyWindow : FluidWindow<NodyWindow>
     {
         private const string WINDOW_TITLE = "Nody";
-        public const string k_WindowMenuPath = "Tools/Doozy/Nody";
+        public const string k_WindowMenuPath = "Tools/Doozy/Nody/";
 
-        [MenuItem(k_WindowMenuPath + "/Window", priority = -900)]
+        [MenuItem(k_WindowMenuPath + "Window", priority = -900)]
         public static void Open()
         {
             InternalOpenWindow(WINDOW_TITLE);
             _ = NodyInspectorWindow.instance;
         }
 
-        [MenuItem(k_WindowMenuPath + "/Refresh")]
+        [MenuItem(k_WindowMenuPath + "Refresh", priority = -800)]
         public static void Refresh()
         {
             FlowNodeViewExtensionGenerator.Run();
@@ -331,7 +331,7 @@ namespace Doozy.Editor.Nody
             base.OnDisable();
             EditorApplication.playModeStateChanged -= PlayModeStateChanged;
 
-            if(NodyInspectorWindow.isOpen)
+            if (NodyInspectorWindow.isOpen)
                 NodyInspectorWindow.instance.ClearInspector();
         }
 
@@ -403,6 +403,9 @@ namespace Doozy.Editor.Nody
 
             if (flowGraphView != null)
             {
+                if (flowGraphView.flowGraph != null)
+                    AssetDatabase.SaveAssetIfDirty(flowGraphView.flowGraph);
+                
                 flowGraphView.flowGraph = null;
                 flowGraphView.ClearGraphView();
             }

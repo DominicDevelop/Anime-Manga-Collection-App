@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2015 - 2021 Doozy Entertainment. All Rights Reserved.
+﻿// Copyright (c) 2015 - 2022 Doozy Entertainment. All Rights Reserved.
 // This code can only be used under the standard Unity Asset Store End User License Agreement
 // A Copy of the EULA APPENDIX 1 is available at http://unity3d.com/company/legal/as_terms
 
@@ -10,10 +10,10 @@ using Doozy.Editor.EditorUI.Components;
 using Doozy.Editor.EditorUI.Components.Internal;
 using Doozy.Editor.EditorUI.ScriptableObjects.Colors;
 using Doozy.Editor.EditorUI.Windows.Internal;
-using Doozy.Runtime.Common.Utils;
 using Doozy.Runtime.UIElements.Extensions;
 using UnityEditor;
 using UnityEngine.UIElements;
+// ReSharper disable MemberCanBePrivate.Global
 
 namespace Doozy.Editor.UIManager.Windows
 {
@@ -22,11 +22,8 @@ namespace Doozy.Editor.UIManager.Windows
         private const string WINDOW_TITLE = "UI Manager";
         public const string k_WindowMenuPath = "Tools/Doozy/UI Manager/";
 
-        [MenuItem(k_WindowMenuPath + "Window", priority = -100)]
+        [MenuItem(k_WindowMenuPath + "Window", priority = -750)]
         public static void Open() => InternalOpenWindow(WINDOW_TITLE);
-
-        // [MenuItem(k_WindowMenuPath + "Refresh UIBehaviours", priority = 1000)]
-        // public static void RefreshUIBehaviours() => UIBehaviourExtensionGenerator.Run();
 
         public static EditorSelectableColorInfo buttonAccentColor => EditorSelectableColors.EditorUI.Blue;
 

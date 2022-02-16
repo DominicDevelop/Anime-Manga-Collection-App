@@ -1,9 +1,8 @@
-﻿// Copyright (c) 2015 - 2021 Doozy Entertainment. All Rights Reserved.
+﻿// Copyright (c) 2015 - 2022 Doozy Entertainment. All Rights Reserved.
 // This code can only be used under the standard Unity Asset Store End User License Agreement
 // A Copy of the EULA APPENDIX 1 is available at http://unity3d.com/company/legal/as_terms
 
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Doozy.Editor.EditorUI;
@@ -19,6 +18,7 @@ using Doozy.Runtime.Reactor.Reactions;
 using Doozy.Runtime.UIElements.Extensions;
 using UnityEditor;
 using UnityEngine.UIElements;
+// ReSharper disable MemberCanBePrivate.Global
 
 namespace Doozy.Editor.UIManager.UIMenu
 {
@@ -43,6 +43,7 @@ namespace Doozy.Editor.UIManager.UIMenu
         public FluidToggleButtonTab linkInstantiateModeTab { get; private set; }
 
         public FluidButton refreshButton { get; set; }
+        public FluidButton regenerateButton { get; set; }
 
         private List<UIMenuPrefabType> prefabTypes { get; set; }
         private List<UIMenuItem> items { get; set; }
@@ -100,6 +101,17 @@ namespace Doozy.Editor.UIManager.UIMenu
 
             searchBox.AddSearchable(this);
 
+            regenerateButton =
+                FluidButton.Get()
+                    .SetTooltip("Regenerate the UI Menu")
+                    .SetIcon(EditorMicroAnimations.EditorUI.Icons.Reset)
+                    .SetElementSize(ElementSize.Tiny)
+                    .SetOnClick(() =>
+                    {
+                        UIMenuItemsDatabase.instance.RefreshDatabase();
+                        UpdateItems();
+                    });
+            
             refreshButton =
                 FluidButton.Get()
                     .SetTooltip("Refresh the UI Menu")
@@ -121,7 +133,8 @@ namespace Doozy.Editor.UIManager.UIMenu
                         Undo.RecordObject(UIMenuSettings.instance, "Update Auto Select");
                         UIMenuSettings.instance.SelectNewlyCreatedObjects = !UIMenuSettings.instance.SelectNewlyCreatedObjects;
                         EditorUtility.SetDirty(UIMenuSettings.instance);
-                        AssetDatabase.SaveAssets();
+                        AssetDatabase.SaveAssetIfDirty(UIMenuSettings.instance);
+                        // AssetDatabase.SaveAssets();
                         UpdateBottomTabs(true);
                     });
 
@@ -134,7 +147,8 @@ namespace Doozy.Editor.UIManager.UIMenu
                         Undo.RecordObject(UIMenuSettings.instance, "Update InstantiateMode");
                         UIMenuSettings.instance.InstantiateMode = PrefabInstantiateModeSetting.Clone;
                         EditorUtility.SetDirty(UIMenuSettings.instance);
-                        AssetDatabase.SaveAssets();
+                        AssetDatabase.SaveAssetIfDirty(UIMenuSettings.instance);
+                        // AssetDatabase.SaveAssets();
                         UpdateBottomTabs(true);
                     });
 
@@ -147,7 +161,8 @@ namespace Doozy.Editor.UIManager.UIMenu
                         Undo.RecordObject(UIMenuSettings.instance, "Update InstantiateMode");
                         UIMenuSettings.instance.InstantiateMode = PrefabInstantiateModeSetting.Default;
                         EditorUtility.SetDirty(UIMenuSettings.instance);
-                        AssetDatabase.SaveAssets();
+                        AssetDatabase.SaveAssetIfDirty(UIMenuSettings.instance);
+                        // AssetDatabase.SaveAssets();
                         UpdateBottomTabs(true);
                     });
 
@@ -161,7 +176,8 @@ namespace Doozy.Editor.UIManager.UIMenu
                         Undo.RecordObject(UIMenuSettings.instance, "Update InstantiateMode");
                         UIMenuSettings.instance.InstantiateMode = PrefabInstantiateModeSetting.Link;
                         EditorUtility.SetDirty(UIMenuSettings.instance);
-                        AssetDatabase.SaveAssets();
+                        AssetDatabase.SaveAssetIfDirty(UIMenuSettings.instance);
+                        // AssetDatabase.SaveAssets();
                         UpdateBottomTabs(true);
                     });
 
@@ -255,6 +271,8 @@ namespace Doozy.Editor.UIManager.UIMenu
                         .SetStyleAlignItems(Align.Center)
                         .SetStyleBackgroundColor(EditorColors.Default.BoxBackground)
                         .SetStylePadding(DesignUtils.k_Spacing2X)
+                        .AddChild(regenerateButton)
+                        .AddChild(DesignUtils.spaceBlock)
                         .AddChild(refreshButton)
                         .AddChild(DesignUtils.spaceBlock2X)
                         .AddChild(autoSelectTab)
@@ -391,7 +409,7 @@ namespace Doozy.Editor.UIManager.UIMenu
                     .SetLabelText(prefabTypeName)
                     .SetElementSize(ElementSize.Normal)
                     .SetContentPadding(0)
-                    .SetContentLeftPadding(16)
+                    .SetContentLeftPadding()
                     .SetStyleMarginBottom(DesignUtils.k_Spacing2X)
                     .SetIsOn(EditorPrefs.GetBool(editorPrefsKey), false);
 
@@ -446,7 +464,7 @@ namespace Doozy.Editor.UIManager.UIMenu
                     .SetName(categoryName)
                     .SetLabelText(categoryName)
                     .SetElementSize(ElementSize.Small)
-                    .SetContentPadding(4)
+                    .SetContentPadding()
                     .SetStyleMarginTop(DesignUtils.k_Spacing)
                     .SetIsOn(EditorPrefs.GetBool(editorPrefsKey), false);
 

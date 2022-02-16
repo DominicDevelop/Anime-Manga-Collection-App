@@ -117,7 +117,7 @@ MonoBehaviour:
     StreamId:
       Category: Music
       Name: Stop
-      Custom: 0
+      Custom: 1
     SignalValueType: 0
     IntegerValue: 0
     BooleanValue: 0
@@ -589,8 +589,8 @@ MonoBehaviour:
     Direction: 0
     Capacity: 1
     Connections:
-    - 04ef9574-caf5-48e0-9b24-7dcefb6b2b73
     - 80b5c79f-9fdc-4c6b-be94-6dd9ad8e9a25
+    - 04ef9574-caf5-48e0-9b24-7dcefb6b2b73
     Value: 
     ValueTypeQualifiedName: 
     CanBeDeleted: 0

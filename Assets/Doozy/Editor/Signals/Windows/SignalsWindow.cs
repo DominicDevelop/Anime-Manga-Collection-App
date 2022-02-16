@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2015 - 2021 Doozy Entertainment. All Rights Reserved.
+﻿// Copyright (c) 2015 - 2022 Doozy Entertainment. All Rights Reserved.
 // This code can only be used under the standard Unity Asset Store End User License Agreement
 // A Copy of the EULA APPENDIX 1 is available at http://unity3d.com/company/legal/as_terms
 
@@ -23,10 +23,10 @@ namespace Doozy.Editor.Signals.Windows
         private const string WINDOW_TITLE = "Signals";
         public const string k_WindowMenuPath = "Tools/Doozy/Signals/";
 
-        [MenuItem(k_WindowMenuPath + "Window", priority = -100)]
+        [MenuItem(k_WindowMenuPath + "Window", priority = -750)]
         public static void Open() => InternalOpenWindow(WINDOW_TITLE);
 
-        [MenuItem(k_WindowMenuPath + "Refresh Providers", priority = 1000)]
+        [MenuItem(k_WindowMenuPath + "Refresh Providers", priority = -650)]
         public static void RefreshProviders() => SignalsUtils.RefreshProviders();
 
         private TemplateContainer templateContainer { get; set; }

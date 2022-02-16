@@ -1,10 +1,11 @@
-﻿// Copyright (c) 2015 - 2021 Doozy Entertainment. All Rights Reserved.
+﻿// Copyright (c) 2015 - 2022 Doozy Entertainment. All Rights Reserved.
 // This code can only be used under the standard Unity Asset Store End User License Agreement
 // A Copy of the EULA APPENDIX 1 is available at http://unity3d.com/company/legal/as_terms
 
-using System.Collections;
 using Doozy.Runtime.Reactor.Animations;
 using Doozy.Runtime.Reactor.Animators.Internal;
+using Doozy.Runtime.UIManager.Layouts;
+using Doozy.Runtime.UIManager.Utils;
 using UnityEngine;
 using UnityEngine.UI;
 // ReSharper disable MemberCanBePrivate.Global
@@ -15,24 +16,14 @@ namespace Doozy.Runtime.Reactor.Animators
     /// <summary>
     /// Specialized animator component used to animate a RectTransform’s position, rotation, scale and alpha.
     /// </summary>
-    [RequireComponent(typeof(Canvas))]
     [RequireComponent(typeof(CanvasGroup))]
-    [RequireComponent(typeof(GraphicRaycaster))]
     [RequireComponent(typeof(RectTransform))]
     [AddComponentMenu("Doozy/Reactor/Animators/UI Animator")]
     public class UIAnimator : ReactorAnimator
     {
-        private Canvas m_Canvas;
-        /// <summary> Reference to the Canvas component </summary>
-        public Canvas canvas => m_Canvas ? m_Canvas : m_Canvas = GetComponent<Canvas>();
-
         private CanvasGroup m_CanvasGroup;
         /// <summary> Reference to the CanvasGroup component </summary>
         public CanvasGroup canvasGroup => m_CanvasGroup ? m_CanvasGroup : m_CanvasGroup = GetComponent<CanvasGroup>();
-
-        private GraphicRaycaster m_GraphicRaycaster;
-        /// <summary> Reference to the GraphicRaycaster component </summary>
-        public GraphicRaycaster graphicRaycaster => m_GraphicRaycaster ? m_GraphicRaycaster : m_GraphicRaycaster = GetComponent<GraphicRaycaster>();
 
         private RectTransform m_RectTransform;
         /// <summary> Reference to the RectTransform component </summary>
@@ -41,42 +32,103 @@ namespace Doozy.Runtime.Reactor.Animators
         [SerializeField] private UIAnimation Animation;
         public new UIAnimation animation => Animation ??= new UIAnimation(rectTransform, canvasGroup);
 
-        public bool inLayoutGroup { get; private set; }
+        private bool isInLayoutGroup { get; set; }
+        private Vector3 localPosition { get; set; }
+        private UIBehaviourHandler uiBehaviourHandler { get; set; }
+        private bool updateStartPositionInLateUpdate { get; set; }
+        private float lastMoveAnimationProgress { get; set; }
 
         protected override void Awake()
         {
-            m_Canvas = GetComponent<Canvas>();
+            if (!Application.isPlaying) return;
+            animatorInitialized = false;
             m_CanvasGroup = GetComponent<CanvasGroup>();
-            m_GraphicRaycaster = GetComponent<GraphicRaycaster>();
             m_RectTransform = GetComponent<RectTransform>();
-            base.Awake();
+            UpdateLayout();
         }
-
 
         protected override void OnEnable()
         {
-            ValidateAnimation();
-            LayoutGroupCheck();
+            if (!Application.isPlaying) return;
+            base.OnEnable();
+            UpdateLayout();
+            updateStartPositionInLateUpdate = true;
+        }
 
-            if (inLayoutGroup)
+        private void OnDisable()
+        {
+            RefreshLayout();
+        }
+
+        private void OnRectTransformDimensionsChange()
+        {
+            if (!animatorInitialized) return;
+            if (!isInLayoutGroup) return;
+            updateStartPositionInLateUpdate = true;
+        }
+
+        private void LateUpdate()
+        {
+            if (!animatorInitialized) return;
+            if (!isInLayoutGroup) return;
+            if (animation.isActive)
+            {
+                lastMoveAnimationProgress = animation.Move.progress;
                 return;
-            
-            UpdateValues();
-            RunBehaviour(OnEnableBehaviour);
+            }
+            if (localPosition != rectTransform.localPosition) updateStartPositionInLateUpdate = true;
+            if (!updateStartPositionInLateUpdate) return;
+            if (CanvasUpdateRegistry.IsRebuildingLayout()) return;
+            UpdateStartPosition();
+            RefreshLayout();
+        }
+
+        private void UpdateLayout()
+        {
+            isInLayoutGroup = rectTransform.IsInLayoutGroup();
+            uiBehaviourHandler = null;
+            if (!isInLayoutGroup) return;
+            LayoutGroup layout = rectTransform.GetLayoutGroupInParent();
+            if (layout == null) return;
+            uiBehaviourHandler = layout.GetUIBehaviourHandler();
+            System.Diagnostics.Debug.Assert(uiBehaviourHandler != null, nameof(uiBehaviourHandler) + " != null");
+            uiBehaviourHandler.SetDirty();
+        }
+
+        private void RefreshLayout()
+        {
+            if (uiBehaviourHandler == null) return;
+            uiBehaviourHandler.RefreshLayout();
+        }
+
+        public void UpdateStartPosition()
+        {
+            // if (name.Contains("#")) Debug.Log($"({Time.frameCount}) [{name}] {nameof(UpdateStartPosition)} sp:({animation.startPosition}) rp:({rectTransform.anchoredPosition}) lp:({rectTransform.localPosition})");
+            animation.startPosition = rectTransform.anchoredPosition3D;
+            if (animation.isPlaying) animation.UpdateValues();
+            localPosition = rectTransform.localPosition;
+            updateStartPositionInLateUpdate = false;
         }
 
         public override void Play(PlayDirection playDirection)
         {
-            base.Play(playDirection);
+            if (!animatorInitialized)
+            {
+                DelayExecution(() => animation.Play(playDirection));
+                return;
+            }
             animation.Play(playDirection);
         }
 
         public override void Play(bool inReverse = false)
         {
-            base.Play(inReverse);
+            if (!animatorInitialized)
+            {
+                DelayExecution(() => animation.Play(inReverse));
+                return;
+            }
             animation.Play(inReverse);
         }
-
 
         public override void SetTarget(object target) =>
             SetTarget(target as RectTransform);
@@ -87,84 +139,136 @@ namespace Doozy.Runtime.Reactor.Animators
         public override void ResetToStartValues(bool forced = false) =>
             animation.ResetToStartValues(forced);
 
-        public override void ValidateAnimation()
+        public override void UpdateSettings()
         {
-            if (animation.rectTransform != null)
-                return;
-            SetTarget(rectTransform);
-            UpdateValues();
+            SetTarget(rectTransform, canvasGroup);
+            if (animation.isPlaying) UpdateValues();
         }
 
         public override void UpdateValues() =>
             animation.UpdateValues();
 
-        public override void PlayToProgress(float toProgress) =>
+        public override void PlayToProgress(float toProgress)
+        {
+            if (!animatorInitialized)
+            {
+                DelayExecution(() => animation.PlayToProgress(toProgress));
+                return;
+            }
             animation.PlayToProgress(toProgress);
+        }
 
-        public override void PlayFromProgress(float fromProgress) =>
+        public override void PlayFromProgress(float fromProgress)
+        {
+            if (!animatorInitialized)
+            {
+                DelayExecution(() => animation.PlayFromProgress(fromProgress));
+                return;
+            }
             animation.PlayFromProgress(fromProgress);
+        }
 
-        public override void PlayFromToProgress(float fromProgress, float toProgress) =>
+        public override void PlayFromToProgress(float fromProgress, float toProgress)
+        {
+            if (!animatorInitialized)
+            {
+                DelayExecution(() => animation.PlayFromToProgress(fromProgress, toProgress));
+                return;
+            }
             animation.PlayFromToProgress(fromProgress, toProgress);
+        }
 
-        public override void Stop() =>
+        public override void Stop()
+        {
+            if (!animatorInitialized)
+            {
+                DelayExecution(() => animation.Stop());
+                return;
+            }
             animation.Stop();
+        }
 
-        public override void Finish() =>
+        public override void Finish()
+        {
+            if (!animatorInitialized)
+            {
+                DelayExecution(() => animation.Finish());
+                return;
+            }
             animation.Finish();
+        }
 
-        public override void Reverse() =>
+        public override void Reverse()
+        {
+            if (!animatorInitialized)
+            {
+                DelayExecution(() => animation.Reverse());
+                return;
+            }
             animation.Reverse();
+        }
 
-        public override void Rewind() =>
+        public override void Rewind()
+        {
+            if (!animatorInitialized)
+            {
+                DelayExecution(() => animation.Rewind());
+                return;
+            }
             animation.Rewind();
+        }
 
-        public override void Pause() =>
+        public override void Pause()
+        {
+            if (!animatorInitialized)
+            {
+                DelayExecution(() => animation.Pause());
+                return;
+            }
             animation.Pause();
+        }
 
-        public override void Resume() =>
+        public override void Resume()
+        {
+            if (!animatorInitialized)
+            {
+                DelayExecution(() => animation.Resume());
+                return;
+            }
             animation.Resume();
+        }
 
-        public override void SetProgressAtOne() =>
+        public override void SetProgressAtOne()
+        {
+            if (!animatorInitialized)
+            {
+                DelayExecution(() => animation.SetProgressAtOne());
+                return;
+            }
             animation.SetProgressAtOne();
+        }
 
-        public override void SetProgressAtZero() =>
+        public override void SetProgressAtZero()
+        {
+            if (!animatorInitialized)
+            {
+                DelayExecution(() => animation.SetProgressAtZero());
+                return;
+            }
             animation.SetProgressAtZero();
+        }
 
-        public override void SetProgressAt(float targetProgress) =>
+        public override void SetProgressAt(float targetProgress)
+        {
+            if (!animatorInitialized)
+            {
+                DelayExecution(() => SetProgressAt(targetProgress));
+                return;
+            }
             animation.SetProgressAt(targetProgress);
+        }
 
         protected override void Recycle() =>
             animation?.Recycle();
-
-        private void LayoutGroupCheck()
-        {
-            System.Diagnostics.Debug.Assert(rectTransform != null, nameof(rectTransform) + " != null");
-            Transform parent = rectTransform.parent;
-            LayoutGroup layoutGroup = parent != null ? parent.GetComponent<LayoutGroup>() : null;
-            inLayoutGroup = layoutGroup != null;
-            if (layoutGroup == null) return;
-            LayoutRebuilder.ForceRebuildLayoutImmediate(layoutGroup.GetComponent<RectTransform>());
-            StartCoroutine(InitializeInLayoutGroup());
-        }
-
-        private IEnumerator InitializeInLayoutGroup()
-        {
-            yield return null;
-            yield return null;
-            UpdateStartPosition();
-            
-            UpdateValues();
-            RunBehaviour(OnEnableBehaviour);
-        }
-
-        private void UpdateStartPosition()
-        {
-            if (!inLayoutGroup) return;
-            if (animation.Move == null) return;
-            if (animation.Move.isActive) return;
-            animation.startPosition = rectTransform.anchoredPosition3D;
-            animation.UpdateValues();
-        }
     }
 }

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2015 - 2021 Doozy Entertainment. All Rights Reserved.
+﻿// Copyright (c) 2015 - 2022 Doozy Entertainment. All Rights Reserved.
 // This code can only be used under the standard Unity Asset Store End User License Agreement
 // A Copy of the EULA APPENDIX 1 is available at http://unity3d.com/company/legal/as_terms
 
@@ -287,7 +287,7 @@ namespace Doozy.Runtime.Nody
 
         public void Resume()
         {
-
+            //ToDo: Resume graph
         }
 
         /// <summary> Stop the graph </summary>
@@ -325,8 +325,9 @@ namespace Doozy.Runtime.Nody
             if (activeSubGraph != null)
                 activeSubGraph.FixedUpdate();
 
-            foreach (FlowNode node in globalNodes.Where(node => node != activeNode && node.runFixedUpdate))
-                node.FixedUpdate();
+            foreach (FlowNode node in globalNodes)
+                if (node != activeNode && node.runFixedUpdate)
+                    node.FixedUpdate();
         }
 
         /// <summary> LateUpdate is called every frame, after all Update functions have been called and if this flow has been loaded by a controller </summary>
@@ -338,8 +339,9 @@ namespace Doozy.Runtime.Nody
             if (activeSubGraph != null)
                 activeSubGraph.LateUpdate();
 
-            foreach (FlowNode node in globalNodes.Where(node => node != activeNode && node.runLateUpdate))
-                node.LateUpdate();
+            foreach (FlowNode node in globalNodes)
+                if (node != activeNode && node.runLateUpdate)
+                    node.LateUpdate();
         }
 
         /// <summary> Update is called every frame, if this flow has been loaded by a controller </summary>
@@ -351,15 +353,17 @@ namespace Doozy.Runtime.Nody
             if (activeSubGraph != null)
                 activeSubGraph.Update();
 
-            foreach (FlowNode node in globalNodes.Where(node => node != activeNode && node.runUpdate))
-                node.Update();
+            foreach (FlowNode node in globalNodes)
+                if (node != activeNode && node.runUpdate)
+                    node.Update();
         }
 
         /// <summary> Refresh all the references for the graph's nodes </summary>
         public void UpdateNodes()
         {
             Nodes = Nodes.Where(n => n != null).ToList();
-            Nodes.ForEach(node => node.SetFlowGraph(this));
+            foreach (FlowNode node in Nodes)
+                node.SetFlowGraph(this);
         }
 
         public FlowGraph Clone()

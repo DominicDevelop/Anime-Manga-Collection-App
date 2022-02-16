@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2015 - 2021 Doozy Entertainment. All Rights Reserved.
+﻿// Copyright (c) 2015 - 2022 Doozy Entertainment. All Rights Reserved.
 // This code can only be used under the standard Unity Asset Store End User License Agreement
 // A Copy of the EULA APPENDIX 1 is available at http://unity3d.com/company/legal/as_terms
 
@@ -28,9 +28,9 @@ namespace Doozy.Editor.Nody
     public class NodyCreateNodeWindow : FluidWindow<NodyCreateNodeWindow>
     {
         private const string WINDOW_TITLE = "Create Node";
-        public const string k_WindowMenuPath = "Tools/Doozy/Nody";
+        public const string k_WindowMenuPath = "Tools/Doozy/Nody/";
 
-        [MenuItem(k_WindowMenuPath + "/" + WINDOW_TITLE)]
+        [MenuItem(k_WindowMenuPath + WINDOW_TITLE, priority = -800)]
         public static void Open() => InternalOpenWindow(WINDOW_TITLE);
 
         public static Color accentColor => EditorColors.Nody.Color;

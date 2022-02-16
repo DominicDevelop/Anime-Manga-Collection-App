@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2015 - 2021 Doozy Entertainment. All Rights Reserved.
+﻿// Copyright (c) 2015 - 2022 Doozy Entertainment. All Rights Reserved.
 // This code can only be used under the standard Unity Asset Store End User License Agreement
 // A Copy of the EULA APPENDIX 1 is available at http://unity3d.com/company/legal/as_terms
 
@@ -14,7 +14,7 @@ namespace Doozy.Editor.Reactor.Windows
     {
         private const string WINDOW_TITLE = "Editor Heartbeat";
 
-        [MenuItem(ReactorWindow.k_WindowMenuPath + "/" + WINDOW_TITLE, priority = 100)]
+        [MenuItem(ReactorWindow.k_WindowMenuPath + WINDOW_TITLE, priority = -700)]
         internal static void ShowWindow() => InternalOpenWindow(WINDOW_TITLE);
 
         private TickerVisualizer m_TickerVisualizer;

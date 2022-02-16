@@ -15,21 +15,12 @@ namespace Doozy.Editor.UIManager.UIMenu
     public static class UIMenuContextMenu
     {
         private const int MENU_ITEM_PRIORITY = 11;
-        private const string MENU_PATH = "GameObject/Doozy/";
+        private const string MENU_PATH = "GameObject/Doozy";
 
         public static class Component
         {
             private const string TYPE_NAME = "Component";
             private const string TYPE_MENU_PATH = MENU_PATH + "/" + TYPE_NAME + "/";
-
-            public static class CategoryName
-            {
-                private const string CATEGORY_NAME = "Category Name";
-                private const string CATEGORY_MENU_PATH = TYPE_MENU_PATH + CATEGORY_NAME + "/";
-
-                [MenuItem(CATEGORY_MENU_PATH + "Prefab Name (MyTag)", false, MENU_ITEM_PRIORITY)]
-                public static void CreatePrefabNameMyTag(MenuCommand command) => UIMenuUtils.AddToScene(TYPE_NAME, CATEGORY_NAME, "PrefabNameMyTag");
-            }
 
             public static class Checkbox
             {
@@ -350,6 +341,15 @@ namespace Doozy.Editor.UIManager.UIMenu
 
                 [MenuItem(CATEGORY_MENU_PATH + "Icon Toggle (Tiny)", false, MENU_ITEM_PRIORITY)]
                 public static void CreateIconToggleTiny(MenuCommand command) => UIMenuUtils.AddToScene(TYPE_NAME, CATEGORY_NAME, "IconToggleTiny");
+            }
+
+            public static class Menu
+            {
+                private const string CATEGORY_NAME = "Menu";
+                private const string CATEGORY_MENU_PATH = TYPE_MENU_PATH + CATEGORY_NAME + "/";
+
+                [MenuItem(CATEGORY_MENU_PATH + "Submenu Button", false, MENU_ITEM_PRIORITY)]
+                public static void CreateSubmenuButton(MenuCommand command) => UIMenuUtils.AddToScene(TYPE_NAME, CATEGORY_NAME, "SubmenuButton");
             }
 
             public static class Radio

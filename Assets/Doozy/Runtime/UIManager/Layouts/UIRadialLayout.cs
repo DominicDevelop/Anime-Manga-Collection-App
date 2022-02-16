@@ -1,10 +1,13 @@
-﻿// Copyright (c) 2015 - 2021 Doozy Entertainment. All Rights Reserved.
+﻿// Copyright (c) 2015 - 2022 Doozy Entertainment. All Rights Reserved.
 // This code can only be used under the standard Unity Asset Store End User License Agreement
 // A Copy of the EULA APPENDIX 1 is available at http://unity3d.com/company/legal/as_terms
 
+using System.Collections;
 using System.Collections.Generic;
+using Doozy.Runtime.Reactor.Animations;
 using Doozy.Runtime.Reactor.Animators;
 using Doozy.Runtime.UIManager.Animators;
+using Doozy.Runtime.UIManager.Components;
 using Doozy.Runtime.UIManager.Layouts.Internal;
 using UnityEngine;
 using UnityEngine.UI;
@@ -266,6 +269,7 @@ namespace Doozy.Runtime.UIManager.Layouts
             }
         }
 
+        private bool runUpdateAnimatorsStartPosition { get; set; }
 
         #if UNITY_EDITOR
         protected override void Reset()
@@ -277,7 +281,9 @@ namespace Doozy.Runtime.UIManager.Layouts
 
         protected override void OnEnable()
         {
-            base.OnEnable();
+            if (!Application.isPlaying) return;
+            // base.OnEnable();
+            runUpdateAnimatorsStartPosition = false;
             CalculateRadial();
         }
 
@@ -285,9 +291,11 @@ namespace Doozy.Runtime.UIManager.Layouts
 
         public override void SetLayoutVertical() {}
 
-        public override void CalculateLayoutInputVertical() { CalculateRadial(); }
+        public override void CalculateLayoutInputVertical() =>
+            CalculateRadial();
 
-        public override void CalculateLayoutInputHorizontal() { CalculateRadial(); }
+        public override void CalculateLayoutInputHorizontal() =>
+            CalculateRadial();
 
         /// <summary> Rebuild the layout </summary>
         public void CalculateRadial()
@@ -301,29 +309,7 @@ namespace Doozy.Runtime.UIManager.Layouts
                 var child = transform.GetChild(i) as RectTransform;
                 if (child == null) continue;
 
-                UIAnimator uiAnimator = child.GetComponent<UIAnimator>();
-                if (uiAnimator != null) uiAnimator.animation.startPosition = uiAnimator.rectTransform.anchoredPosition3D;
-
-                UIContainerUIAnimator uiContainerAnimator = child.GetComponent<UIContainerUIAnimator>();
-                if (uiContainerAnimator != null)
-                {
-                    Vector3 anchoredPosition3D = uiContainerAnimator.rectTransform.anchoredPosition3D;
-                    uiContainerAnimator.showAnimation.startPosition = anchoredPosition3D;
-                    uiContainerAnimator.hideAnimation.startPosition = anchoredPosition3D;
-                }
-
-                UISelectableUIAnimator uiSelectableUIAnimator = child.GetComponent<UISelectableUIAnimator>();
-                if (uiSelectableUIAnimator != null)
-                {
-                    Vector3 anchoredPosition3D = uiSelectableUIAnimator.rectTransform.anchoredPosition3D;
-                    uiSelectableUIAnimator.normalAnimation.startPosition = anchoredPosition3D;
-                    uiSelectableUIAnimator.highlightedAnimation.startPosition = anchoredPosition3D;
-                    uiSelectableUIAnimator.pressedAnimation.startPosition = anchoredPosition3D;
-                    uiSelectableUIAnimator.selectedAnimation.startPosition = anchoredPosition3D;
-                    uiSelectableUIAnimator.disabledAnimation.startPosition = anchoredPosition3D;
-                }
-
-                var childLayout = child.GetComponent<LayoutElement>();
+                LayoutElement childLayout = child.GetComponent<LayoutElement>();
                 if (child == null || !child.gameObject.activeSelf || (childLayout != null && childLayout.ignoreLayout)) continue;
                 m_ChildList.Add(child);
                 activeChildCount++;
@@ -331,6 +317,12 @@ namespace Doozy.Runtime.UIManager.Layouts
 
             m_Tracker.Clear();
             if (activeChildCount == 0) return;
+
+            if (Application.isPlaying & !runUpdateAnimatorsStartPosition)
+            {
+                runUpdateAnimatorsStartPosition = true;
+                UpdateAnimatorsStartValues();
+            }
 
             rectTransform.sizeDelta = new Vector2(Radius, Radius) * 2f;
 
@@ -383,6 +375,54 @@ namespace Doozy.Runtime.UIManager.Layouts
 
                 fAngle += fOffsetAngle;
             }
+        }
+
+        private void UpdateAnimatorsStartValues()
+        {
+            LayoutRebuilder.MarkLayoutForRebuild(rectTransform);
+
+            for (int i = 0; i < transform.childCount; i++)
+            {
+                var child = transform.GetChild(i) as RectTransform;
+                if (child == null) continue;
+
+                UIAnimator uiAnimator = child.GetComponent<UIAnimator>();
+                if (uiAnimator != null)
+                {
+                    uiAnimator.animation.startPosition = uiAnimator.rectTransform.anchoredPosition3D;
+                    uiAnimator.animation.startRotation = uiAnimator.rectTransform.localEulerAngles;
+                    if (uiAnimator.animation.isPlaying) uiAnimator.UpdateValues();
+                }
+
+                UIContainerUIAnimator uiContainerUIAnimator = child.GetComponent<UIContainerUIAnimator>();
+                if (uiContainerUIAnimator != null)
+                {
+                    if (uiContainerUIAnimator.isConnected && uiContainerUIAnimator.controller.isVisible)
+                    {
+                        uiContainerUIAnimator.showAnimation.startPosition = uiContainerUIAnimator.rectTransform.anchoredPosition3D;
+                        uiContainerUIAnimator.showAnimation.startRotation = uiContainerUIAnimator.rectTransform.localEulerAngles;
+                    }
+                    // uiContainerAnimator.UpdateSettings();
+                }
+
+                UISelectableUIAnimator uiSelectableUIAnimator = child.GetComponent<UISelectableUIAnimator>();
+                if (uiSelectableUIAnimator != null)
+                {
+                    if (uiSelectableUIAnimator.isConnected && uiSelectableUIAnimator.controller.currentUISelectionState == UISelectionState.Normal & !uiSelectableUIAnimator.anyAnimationIsActive)
+                    {
+                        foreach (UISelectionState state in UISelectable.uiSelectionStates)
+                        {
+                            UIAnimation uiAnimation = uiSelectableUIAnimator.GetAnimation(state);
+                            if (uiAnimation == null) continue;
+                            uiAnimation.startPosition = uiAnimation.rectTransform.anchoredPosition3D;
+                            uiAnimation.startRotation = uiAnimation.rectTransform.localEulerAngles;
+                        }
+                    }
+                    // uiSelectableUIAnimator.UpdateSettings();
+                }
+            }
+
+            runUpdateAnimatorsStartPosition = false;
         }
 
         private void OnValueChanged()

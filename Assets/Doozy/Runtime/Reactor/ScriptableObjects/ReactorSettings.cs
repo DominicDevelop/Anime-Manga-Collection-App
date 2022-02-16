@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2015 - 2021 Doozy Entertainment. All Rights Reserved.
+﻿// Copyright (c) 2015 - 2022 Doozy Entertainment. All Rights Reserved.
 // This code can only be used under the standard Unity Asset Store End User License Agreement
 // A Copy of the EULA APPENDIX 1 is available at http://unity3d.com/company/legal/as_terms
 
@@ -17,10 +17,10 @@ namespace Doozy.Runtime.Reactor.ScriptableObjects
         private const float FPS_FREQUENCY_MODIFIER = 1.001f;
         private const int MIN_FPS = 1;
 
-        public FPS EditorFPS = FPS.FPS_60;
+        public FPS EditorFPS = FPS.FPS_120;
         public int CustomEditorFPS = (int)FPS.CustomFPS;
 
-        public FPS RuntimeFPS = FPS.FPS_90;
+        public FPS RuntimeFPS = FPS.FPS_120;
         public int CustomRuntimeFPS = (int)FPS.CustomFPS;
 
         public static int editorFPS => GetFPS(instance.EditorFPS, Mathf.Min(MIN_FPS, instance.CustomEditorFPS));

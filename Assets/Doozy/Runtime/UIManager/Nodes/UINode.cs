@@ -1,4 +1,4 @@
-// Copyright (c) 2015 - 2021 Doozy Entertainment. All Rights Reserved.
+// Copyright (c) 2015 - 2022 Doozy Entertainment. All Rights Reserved.
 // This code can only be used under the standard Unity Asset Store End User License Agreement
 // A Copy of the EULA APPENDIX 1 is available at http://unity3d.com/company/legal/as_terms
 
@@ -11,7 +11,6 @@ using Doozy.Runtime.Reactor.Internal;
 using Doozy.Runtime.Reactor.Reactions;
 using Doozy.Runtime.Signals;
 using Doozy.Runtime.UIManager.Containers;
-using Doozy.Runtime.UIManager.Input;
 using Doozy.Runtime.UIManager.Nodes.Listeners;
 using Doozy.Runtime.UIManager.Nodes.PortData;
 // ReSharper disable RedundantOverriddenMember
@@ -60,12 +59,12 @@ namespace Doozy.Runtime.UIManager.Nodes
         {
             base.OnEnter(previousNode, previousPort);
 
-            StartTimer();
-            StartListeners();
-
             if (OnEnterHideAllViews) UIView.HideAllViews();
             OnEnterShowViews.ForEach(v => v.Show(flowGraph.controller.playerIndex));
             OnEnterHideViews.ForEach(v => v.Hide(flowGraph.controller.playerIndex));
+            
+            StartListeners();
+            StartTimer();
         }
 
         public override void OnExit()
@@ -97,6 +96,12 @@ namespace Doozy.Runtime.UIManager.Nodes
 
             if (targetPort == null) //no port was found -> do not initialize a reaction (no need)
                 return;
+
+            if (minDuration <= 0)
+            {
+                GoToNextNode(targetPort);
+                return;
+            }
 
             timerReaction =
                 Reaction
@@ -142,14 +147,14 @@ namespace Doozy.Runtime.UIManager.Nodes
 
         private void StopListeners()
         {
-            backButtonListener.Stop();
+            backButtonListener?.Stop();
 
-            uiButtonListener.Stop();
-            uiToggleListener.Stop();
-            uiViewListener.Stop();
+            uiButtonListener?.Stop();
+            uiToggleListener?.Stop();
+            uiViewListener?.Stop();
 
-            streamListeners.ForEach(listener => listener.Stop());
-            streamListeners.Clear();
+            streamListeners?.ForEach(listener => listener.Stop());
+            streamListeners?.Clear();
         }
 
         private void OnBackButton(Signal signal)

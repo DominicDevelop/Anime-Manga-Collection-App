@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2015 - 2021 Doozy Entertainment. All Rights Reserved.
+﻿// Copyright (c) 2015 - 2022 Doozy Entertainment. All Rights Reserved.
 // This code can only be used under the standard Unity Asset Store End User License Agreement
 // A Copy of the EULA APPENDIX 1 is available at http://unity3d.com/company/legal/as_terms
 
@@ -58,19 +58,19 @@ namespace Doozy.Runtime.Common
 
 		public static void Log(object message, UnityEngine.Object context = null)
 		{
-			// message = DoozyPrefix(LogType.Log) + message;
+			message = DoozyPrefix(LogType.Log) + message;
 			logger.Log(message, context);
 		}
 
 		public static void LogWarning(object message, UnityEngine.Object context = null)
 		{
-			// message = DoozyPrefix(LogType.Warning) + message;
+			message = DoozyPrefix(LogType.Warning) + message;
 			logger.LogWarning(message, context);
 		}
 
 		public static void LogError(object message, UnityEngine.Object context = null)
 		{
-			// message = DoozyPrefix(LogType.Error) + message;
+			message = DoozyPrefix(LogType.Error) + message;
 			logger.LogError(message, context);
 		}
 	}
